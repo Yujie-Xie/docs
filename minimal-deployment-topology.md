@@ -1,29 +1,33 @@
 ---
 title: Minimal Deployment Topology
-summary: TiDB クラスターの最小限のデプロイメント トポロジについて学習します。
+summary: Learn the minimal deployment topology of TiDB clusters.
 ---
 
-# 最小限の展開トポロジ {#minimal-deployment-topology}
+# Minimal Deployment Topology {#minimal-deployment-topology}
 
-このドキュメントでは、TiDB クラスターの最小限のデプロイメント トポロジについて説明します。
+This document describes the minimal deployment topology of TiDB clusters.
 
-## トポロジ情報 {#topology-information}
+## Topology information {#topology-information}
 
-| 実例             | カウント | 物理マシン構成                                       | IP                                   | コンフィグレーション                 |
-| :------------- | :--- | :-------------------------------------------- | :----------------------------------- | :------------------------- |
-| ティビ            | 2    | 16 VCore 32 GiB<br/>storage用 100 GiB          | 10.0.1.1<br/> 10.0.1.2               | デフォルトポート<br/>グローバルディレクトリ構成 |
-| PD             | 3    | 4 VCore 8 GiB<br/>storage用 100 GiB            | 10.0.1.4<br/> 10.0.1.5<br/> 10.0.1.6 | デフォルトポート<br/>グローバルディレクトリ構成 |
-| ティクヴ           | 3    | 16 VCore 32 GiB<br/>storage用 2 TiB (NVMe SSD) | 10.0.1.7<br/> 10.0.1.8<br/> 10.0.1.9 | デフォルトポート<br/>グローバルディレクトリ構成 |
-| モニタリングとGrafana | 1    | 4 VCore 8 GiB<br/>storage用 500 GiB (SSD)      | 10.0.1.10                            | デフォルトポート<br/>グローバルディレクトリ構成 |
+| Instance                  | Count | Physical machine configuration                     | IP                                     | Configuration                                     |
+| :------------------------ | :---- | :------------------------------------------------- | :------------------------------------- | :------------------------------------------------ |
+| TiDB                      | 2     | 16 VCore 32 GiB <br/> 100 GiB for storage          | 10.0.1.1 <br/> 10.0.1.2                | Default port <br/> Global directory configuration |
+| PD                        | 3     | 4 VCore 8 GiB <br/> 100 GiB for storage            | 10.0.1.4 <br/> 10.0.1.5 <br/> 10.0.1.6 | Default port <br/> Global directory configuration |
+| TiKV                      | 3     | 16 VCore 32 GiB <br/> 2 TiB (NVMe SSD) for storage | 10.0.1.7 <br/> 10.0.1.8 <br/> 10.0.1.9 | Default port <br/> Global directory configuration |
+| Monitoring &#x26; Grafana | 1     | 4 VCore 8 GiB <br/> 500 GiB (SSD) for storage      | 10.0.1.10                              | Default port <br/> Global directory configuration |
 
-### トポロジーテンプレート {#topology-templates}
-
--   [最小トポロジーのシンプルなテンプレート](https://github.com/pingcap/docs/blob/master/config-templates/simple-mini.yaml)
--   [最小トポロジーの複雑なテンプレート](https://github.com/pingcap/docs/blob/master/config-templates/complex-mini.yaml)
-
-上記の TiDB クラスタ トポロジ ファイルの構成項目の詳細については、 [TiUP を使用して TiDB をデプロイするためのトポロジコンフィグレーションファイル](/tiup/tiup-cluster-topology-reference.md)参照してください。
-
-> **注記：**
+> **Note:**
 >
-> -   構成ファイルで`tidb`ユーザーを手動で作成する必要はありません。TiUPTiUPコンポーネントは、ターゲット マシンに`tidb`ユーザーを自動的に作成します。ユーザーをカスタマイズすることも、ユーザーをコントロール マシンと一致させることもできます。
-> -   デプロイメント ディレクトリを相対パスとして構成すると、クラスターはユーザーのホーム ディレクトリにデプロイされます。
+> The IP addresses of the instances are given as examples only. In your actual deployment, replace the IP addresses with your actual IP addresses.
+
+### Topology templates {#topology-templates}
+
+-   [The simple template for the minimal topology](https://github.com/pingcap/docs/blob/master/config-templates/simple-mini.yaml)
+-   [The complex template for the minimal topology](https://github.com/pingcap/docs/blob/master/config-templates/complex-mini.yaml)
+
+For detailed descriptions of the configuration items in the above TiDB cluster topology file, see [Topology Configuration File for Deploying TiDB Using TiUP](/tiup/tiup-cluster-topology-reference.md).
+
+> **Note:**
+>
+> -   You do not need to manually create the `tidb` user in the configuration file. The TiUP cluster component automatically creates the `tidb` user on the target machines. You can customize the user, or keep the user consistent with the control machine.
+> -   If you configure the deployment directory as a relative path, the cluster will be deployed in the home directory of the user.

@@ -1,113 +1,127 @@
 ---
 title: Password Authentication
-summary: TiDB Cloudコンソールでパスワードを管理し、多要素認証 (MFA) を有効にする方法を学習します。
+summary: Learn how to manage passwords and enable multi-factor authentication (MFA) in the TiDB Cloud console.
 ---
 
-# パスワード認証 {#password-authentication}
+# Password Authentication {#password-authentication}
 
-このドキュメントでは、 TiDB Cloudコンソールでパスワードを管理し、多要素認証 (MFA) を有効にする方法について説明します。このドキュメントは、電子メールとパスワードを使用してTiDB Cloudに[サインアップ](https://tidbcloud.com/free-trial)ているユーザーにのみ適用されます。
+This document describes how to manage passwords and enable multi-factor authentication (MFA) in the TiDB Cloud console. The document is only applicable to users who [sign up](https://tidbcloud.com/free-trial) for TiDB Cloud with emails and passwords.
 
-## サインアップ {#sign-up}
+## Sign up {#sign-up}
 
-電子メールとパスワードを使用してTiDB Cloudに[サインアップ](https://tidbcloud.com/free-trial)するか、Google、GitHub、または Microsoft アカウントを選択してTiDB Cloudへのシングル サインオン (SSO) を行うことができます。
+You can either [sign up](https://tidbcloud.com/free-trial) for TiDB Cloud with email and password, or choose your Google, GitHub, or Microsoft account for single sign-on (SSO) to TiDB Cloud.
 
--   メールアドレスとパスワードを使用してTiDB Cloudにサインアップすると、このドキュメントに従ってパスワードを管理できます。
--   TiDB Cloudへの Google、GitHub、または Microsoft SSO を選択した場合、パスワードは選択したプラットフォームによって管理され、 TiDB Cloudコンソールを使用して変更することはできません。
+-   If you sign up for TiDB Cloud with email and password, you can manage your password according to this document.
+-   If you choose Google, GitHub, or Microsoft SSO to TiDB Cloud, your password is managed by your chosen platform and you cannot change it using the TiDB Cloud console.
 
-電子メールとパスワードを使用してTiDB Cloudアカウントにサインアップするには、次の手順を実行します。
+To sign up for a TiDB Cloud account with email and password, take the following steps:
 
-1.  TiDB Cloud [サインアップ](https://tidbcloud.com/free-trial)ページに移動し、登録情報を入力します。
+1.  Go to the TiDB Cloud [sign up](https://tidbcloud.com/free-trial) page and fill in the registration information.
 
-2.  プライバシー ポリシーとサービス契約を読み、 **[プライバシー ポリシーとサービス契約に同意する]**を選択します。
+2.  Read Privacy Policy and Services Agreement, and then select **I agree to the Privacy Policy and Services Agreement**.
 
-3.  **「サインアップ」を**クリックします。
+3.  Click **Sign up**.
 
-TiDB Cloudの確認メールが届きます。登録プロセス全体を完了するには、メールボックスを確認して登録を確認してください。
+You will receive a verification email for TiDB Cloud. To complete the whole registration process, check your email box and confirm the registration.
 
-## サインインまたはサインアウト {#sign-in-or-sign-out}
+## Sign in or sign out {#sign-in-or-sign-out}
 
-### サインイン {#sign-in}
+### Sign in {#sign-in}
 
-電子メールとパスワードを使用してTiDB Cloudにログインするには、次の手順を実行します。
+To log into TiDB Cloud using email and password, take the following steps:
 
-1.  TiDB Cloud [ログイン](https://tidbcloud.com/)ページに移動します。
+1.  Go to the TiDB Cloud [login](https://tidbcloud.com/) page.
 
-2.  メールアドレスとパスワードを入力してください。
+2.  Fill in your email and password.
 
-3.  **[サインイン]を**クリックします。
+3.  Click **Sign In**.
 
-ログインが成功すると、 TiDB Cloudコンソールに移動します。
+If the login is successful, you will be directed to the TiDB Cloud console.
 
-### サインアウト {#sign-out}
+### Sign out {#sign-out}
 
-TiDB Cloudコンソールの左下隅で、<mdsvgicon name="icon-top-account-settings">**ログアウトを**選択します。</mdsvgicon>
+In the lower-left corner of the TiDB Cloud console, click <mdsvgicon name="icon-top-account-settings"> and select **Logout**.</mdsvgicon>
 
-## パスワードポリシー {#password-policy}
+## Password policy {#password-policy}
 
-TiDB Cloud は、登録ユーザーに対してデフォルトのパスワード ポリシーを設定します。パスワードがポリシーを満たしていない場合は、パスワードを設定するときにプロンプ​​トが表示されます。
+TiDB Cloud sets a default password policy for registered users. If your password does not meet the policy, you will get a prompt when you set the password.
 
-デフォルトのパスワード ポリシーは次のとおりです。
+The default password policy is as follows:
 
--   長さは 8 文字以上。
--   少なくとも 1 つの大文字 (A ～ Z)。
--   少なくとも 1 つの小文字 (az)。
--   少なくとも 1 つの数字 (0 ～ 9)。
--   新しいパスワードは、以前の 4 つのパスワードと同じにすることはできません。
+-   At least 8 characters in length.
+-   At least 1 uppercase letter (A-Z).
+-   At least 1 lowercase letter (a-z).
+-   At least 1 number (0-9).
+-   A new password must not be the same as any of the previous four passwords.
 
-## パスワードをリセットする {#reset-a-password}
+## Reset a password {#reset-a-password}
 
-> **注記：**
+> **Note:**
 >
-> このセクションは、電子メールとパスワードを使用したTiDB Cloud登録にのみ適用されます。Google SSO または GitHub SSO を使用してTiDB Cloudにサインアップする場合、パスワードは Google または GitHub によって管理され、 TiDB Cloudコンソールを使用して変更することはできません。
+> This section is only applicable to TiDB Cloud registration with email and password. If you sign up for TiDB Cloud with Google SSO or GitHub SSO, your password is managed by Google or GitHub and you cannot change it using the TiDB Cloud console.
 
-パスワードを忘れた場合は、次の手順に従ってメールでリセットできます。
+If you forget your password, you can reset it by email as follows:
 
-1.  TiDB Cloud [ログイン](https://tidbcloud.com/)ページに移動します。
+1.  Go to the TiDB Cloud [login](https://tidbcloud.com/) page.
 
-2.  **「パスワードを忘れた場合」**をクリックし、パスワードをリセットするためのリンクが記載されたメールを確認してください。
+2.  Click **Forgot password**, and then check your email for the link to reset the password.
 
-## パスワードを変更する {#change-a-password}
+## Change a password {#change-a-password}
 
-> **注記：**
+> **Note:**
 >
-> 電子メールとパスワードを使用してTiDB Cloudにサインアップする場合は、90 日ごとにパスワードをリセットすることをお勧めします。そうしないと、 TiDB Cloudにログインしたときに、パスワードを変更するように求めるパスワード有効期限のリマインダーが表示されます。
+> If you sign up for TiDB Cloud with email and password, it is recommended that you reset your password every 90 days. Otherwise, you will get a password expiration reminder to change your password when you log in to TiDB Cloud.
 
-1.  クリック<mdsvgicon name="icon-top-account-settings">TiDB Cloudコンソールの左下隅にあります。</mdsvgicon>
+1.  Click <mdsvgicon name="icon-top-account-settings"> in the lower-left corner of the TiDB Cloud console.</mdsvgicon>
 
-2.  **[アカウント設定]を**クリックします。
+2.  Click **Account Settings**.
 
-3.  **[パスワードの変更]**タブをクリックし、 **[パスワードの変更]**をクリックして、 TiDB Cloudからの電子メールを確認し、パスワードをリセットします。
+3.  Click the **Change Password** tab, click **Change Password**, and then check your email for TiDB Cloud to reset the password.
 
-## MFA を有効または無効にする (オプション) {#enable-or-disable-mfa-optional}
+## Manage multi-factor authentication (optional) {#manage-multi-factor-authentication-optional}
 
-> **注記：**
+> **Note:**
 >
-> このセクションは、電子メールとパスワードを使用してTiDB Cloudに[サインアップ](https://tidbcloud.com/free-trial)場合にのみ適用されます。Google、GitHub、または Microsoft SSO を使用してTiDB Cloudにサインアップする場合は、選択した ID 管理プラットフォームで MFA を有効にすることができます。
+> -   This section applies only when you [sign up](https://tidbcloud.com/free-trial) for TiDB Cloud with emails and passwords. If you sign up for TiDB Cloud with Google, GitHub, or Microsoft SSO, you can enable MFA on your chosen identity management platform.
+> -   If you have enabled TiDB Cloud MFA in an SSO login scenario, migrate your MFA management to your SSO identity management platform before **September 30, 2025**, to ensure account security.
 
-TiDB Cloudにログイン後、法律や規制に従って MFA を有効にすることができます。
+Multi-factor authentication (MFA) adds additional security by requiring an Authenticator app to generate a one-time verification code for login. When you log in, TiDB Cloud verifies both your password and the MFA verification code. You can use any Authenticator app from the iOS or Android App Store to generate this password, such as Google Authenticator and Authy.
 
-2 要素認証 (MFA または 2FA とも呼ばれます) では、認証アプリを使用してログイン用のワンタイム パスワードを生成することで、セキュリティが強化されます。このパスワードを生成するには、Google Authenticator や Authy など、iOS または Android App Store の任意の認証アプリを使用できます。
+### Enable MFA {#enable-mfa}
 
-### MFAを有効にする {#enable-mfa}
+1.  Click <mdsvgicon name="icon-top-account-settings"> in the lower-left corner of the TiDB Cloud console.</mdsvgicon>
 
-1.  クリック<mdsvgicon name="icon-top-account-settings">TiDB Cloudコンソールの左下隅にあります。</mdsvgicon>
+2.  Click **Account Settings**.
 
-2.  **[アカウント設定]を**クリックします。
+3.  Click the **Multi-Factor Authentication** tab.
 
-3.  「 **2要素認証」**タブをクリックします。
+4.  Click **Enable**.
 
-4.  **[有効にする]**をクリックします。
+5.  Enter your account password to confirm your identity.
 
-5.  ログアウトしてから再度ログインします。QR コードが表示されるので、認証アプリを使用してスキャンできます。
+6.  In the **Set Up Authenticator App** section, use your authenticator app to scan the QR code and associate your MFA device.
 
-6.  アプリによって生成された認証コードを入力します。
+7.  Enter the authentication code generated by your app to complete the MFA device association.
 
-### MFAを無効にする {#disable-mfa}
+8.  Save the one-time recovery code, which helps you authenticate if your MFA device is unavailable.
 
-1.  クリック<mdsvgicon name="icon-top-account-settings">TiDB Cloudコンソールの左下隅にあります。</mdsvgicon>
+> **Note:**
+>
+> -   You need to store the recovery code securely to maintain account security.
+> -   If you use the recovery code for MFA verification during login, the system automatically generates a new recovery code after successful verification.
 
-2.  **[アカウント設定]を**クリックします。
+### Disable MFA {#disable-mfa}
 
-3.  「 **2要素認証」**タブをクリックします。
+1.  Click <mdsvgicon name="icon-top-account-settings"> in the lower-left corner of the TiDB Cloud console.</mdsvgicon>
 
-4.  **[無効にする]**をクリックします。
+2.  Click **Account Settings**.
+
+3.  Click the **Multi-Factor Authentication** tab.
+
+4.  Click **Disable**.
+
+5.  In the **Disable Multi-Factor Authentication** section, enter your account password and MFA authentication code to confirm the operation.
+
+> **Note:**
+>
+> Disabling MFA reduces the security of your account. Proceed with caution.

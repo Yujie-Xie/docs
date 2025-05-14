@@ -1,271 +1,267 @@
 ---
 title: Back Up and Restore TiDB Cloud Dedicated Data
-summary: TiDB Cloud Dedicated クラスターをバックアップおよび復元する方法を学びます。
+summary: Learn how to back up and restore your TiDB Cloud Dedicated cluster.
 aliases: ['/tidbcloud/restore-deleted-tidb-cluster']
 ---
 
-# TiDB Cloud専用データのバックアップと復元 {#back-up-and-restore-tidb-cloud-dedicated-data}
+# Back Up and Restore TiDB Cloud Dedicated Data {#back-up-and-restore-tidb-cloud-dedicated-data}
 
-このドキュメントでは、 TiDB CloudでTiDB Cloud Dedicated クラスター データをバックアップおよび復元する方法について説明します。TiDB TiDB Cloud Dedicated は、自動バックアップと手動バックアップをサポートしています。また、バックアップ データを新しいクラスターに復元したり、削除したクラスターをごみ箱から復元したりすることもできます。
+This document describes how to back up and restore your TiDB Cloud Dedicated cluster data on TiDB Cloud. TiDB Cloud Dedicated supports automatic backup and manual backup. You can also restore backup data to a new cluster or restore a deleted cluster from the recycle bin.
 
-> **ヒント**
+> **Tip**
 >
-> TiDB Cloud Serverless クラスター データをバックアップおよび復元する方法については、 [TiDB Cloudサーバーレス データのバックアップと復元](/tidb-cloud/backup-and-restore-serverless.md)参照してください。
+> To learn how to back up and restore TiDB Cloud Serverless cluster data, see [Back Up and Restore TiDB Cloud Serverless Data](/tidb-cloud/backup-and-restore-serverless.md).
 
-## 制限事項 {#limitations}
+## Limitations {#limitations}
 
--   v6.2.0 以降のバージョンのクラスターの場合、 TiDB Cloud Dedicated は、デフォルトでバックアップからのユーザー アカウントと SQL バインディングの復元をサポートします。
--   TiDB Cloud Dedicated は、 `mysql`スキーマに保存されているシステム変数の復元をサポートしていません。
--   最初にデータをインポートし、次に**手動で**スナップショット バックアップを実行し、最後にポイントインタイム リストアを有効にすることをお勧めします。TiDB TiDB Cloudコンソールからインポートされたデータは変更ログを生成**しない**ため、自動的に検出してバックアップすることはできません。詳細については、 [Amazon S3 または GCS から CSV ファイルをTiDB Cloudにインポートする](/tidb-cloud/import-csv-files.md)参照してください。
--   ポイントインタイム リストアを複数回オン/オフにした場合、最新のポイントインタイム リストアが有効になった後の回復可能範囲内の時点のみを選択できます。それより前の回復可能範囲にはアクセスできません。
--   **ポイントインタイム リストア**と**デュアルリージョンバックアップ**のスイッチを同時に変更しないでください。
+-   For clusters of v6.2.0 or later versions, TiDB Cloud Dedicated supports restoring user accounts and SQL bindings from backups by default.
+-   TiDB Cloud Dedicated does not support restoring system variables stored in the `mysql` schema.
+-   It is recommended that you import data first, then perform a **manual** snapshot backup, and finally enable Point-in-time Restore. Because the data imported through the TiDB Cloud console **does not** generate change logs, it cannot be automatically detected and backed up. For more information, see [Import CSV Files from Amazon S3 or GCS into TiDB Cloud](/tidb-cloud/import-csv-files.md).
+-   If you turn on and off Point-in-time Restore multiple times, you can only choose a time point within the recoverable range after the most recent Point-in-time Restore is enabled. The earlier recoverable range is not accessible.
+-   DO NOT modify the switches of **Point-in-time Restore** and **Dual Region Backup** at the same time.
 
-## バックアップ {#backup}
+## Backup {#backup}
 
-### 自動バックアップをオンにする {#turn-on-auto-backup}
+### Turn on auto backup {#turn-on-auto-backup}
 
-TiDB Cloud Dedicated は[スナップショットバックアップ](https://docs.pingcap.com/tidb/stable/br-snapshot-guide)と[ログバックアップ](https://docs.pingcap.com/tidb/stable/br-pitr-guide)両方をサポートしています。スナップショット バックアップを使用すると、データをバックアップ ポイントに復元できます。デフォルトでは、スナップショット バックアップは自動的に作成され、バックアップ保持ポリシーに従って保存されます。自動バックアップはいつでも無効にできます。
+TiDB Cloud Dedicated supports both [snapshot backup](https://docs.pingcap.com/tidb/stable/br-snapshot-guide) and [log backup](https://docs.pingcap.com/tidb/stable/br-pitr-guide). Snapshot backup enables you to restore data to the backup point. By default, snapshot backups are taken automatically and stored according to your backup retention policy. You can disable auto backup at any time.
 
-#### ポイントインタイム復元をオンにする {#turn-on-point-in-time-restore}
+#### Turn on Point-in-time Restore {#turn-on-point-in-time-restore}
 
-> **注記**
+> **Note**
 >
-> ポイントインタイム リストア機能は、v6.4.0 以降のTiDB Cloud Dedicated クラスターでサポートされています。
+> The Point-in-time Restore feature is supported for TiDB Cloud Dedicated clusters that are v6.4.0 or later.
 
-この機能は、任意の時点のデータを新しいクラスターに復元することをサポートします。この機能を使用すると、次のことができます。
+This feature supports restoring data of any point in time to a new cluster. You can use it to:
 
--   災害復旧における RPO を削減します。
--   エラー イベント前の時点を復元することで、データ書き込みエラーのケースを解決します。
--   ビジネスの履歴データを監査します。
+-   Reduce RPO in disaster recovery.
+-   Resolve cases of data write errors by restoring point-in-time that is before the error event.
+-   Audit the historical data of the business.
 
-この機能をオンにすることを強くお勧めします。コストはスナップショット バックアップと同じです。詳細については、 [データバックアップコスト](https://www.pingcap.com/tidb-dedicated-pricing-details#backup-storage-cost)を参照してください。
+It is strongly recommended to turn on this feature. The cost is the same as snapshot backup. For more information, refer to [Data Backup Cost](https://www.pingcap.com/tidb-dedicated-pricing-details#backup-storage-cost).
 
-この機能をオンにするには、次の手順を実行します。
+To turn on this feature, perform the following steps:
 
-1.  TiDB Cloud Dedicated クラスターの**バックアップ**ページに移動します。
+1.  Navigate to the **Backup** page of a TiDB Cloud Dedicated cluster.
 
-2.  **[バックアップ設定]を**クリックします。
+2.  Click **Backup Setting**.
 
-3.  **自動バックアップ**スイッチを**オン**に切り替えます。
+3.  Toggle the **Auto Backup** switch to **On**.
 
-4.  **ポイントインタイム復元**スイッチを**オン**に切り替えます。
+4.  Toggle the **Point-in-time Restore** switch to **On**.
 
-    > **警告**
+    > **Warning**
     >
-    > ポイントインタイム リストアは、次のバックアップ タスクが完了した後にのみ有効になります。より早く有効にするには、有効にした後で[手動でバックアップを実行する](#perform-a-manual-backup)実行します。
+    > Point-in-Time Restore only takes effect after the next backup task is completed. To make it take effect earlier, you can [manually perform a backup](#perform-a-manual-backup) after enabling it.
 
-5.  構成の変更をプレビューするには、 **「確認」**をクリックします。
+5.  Click **Save** to save changes.
 
-6.  変更を保存するには、もう一度**「確認」**をクリックします。
+#### Configure backup schedule {#configure-backup-schedule}
 
-#### バックアップスケジュールを設定する {#configure-backup-schedule}
+TiDB Cloud Dedicated supports daily and weekly backup schedules. By default, the backup schedule is set to daily. You can choose a specific time of the day or week to start snapshot backup.
 
-TiDB Cloud Dedicated は、毎日および毎週のバックアップ スケジュールをサポートしています。デフォルトでは、バックアップ スケジュールは毎日に設定されています。スナップショット バックアップを開始する特定の時刻または週を選択できます。
+To configure the backup schedule, perform the following steps:
 
-バックアップ スケジュールを構成するには、次の手順を実行します。
+1.  Navigate to the **Backup** page of a TiDB Cloud Dedicated cluster.
 
-1.  TiDB Cloud Dedicated クラスターの**バックアップ**ページに移動します。
+2.  Click **Backup Setting**.
 
-2.  **[バックアップ設定]を**クリックします。
+3.  Toggle the **Auto Backup** switch to **On**.
 
-3.  **自動バックアップ**スイッチを**オン**に切り替えます。
+4.  Configure the backup schedule as follows:
 
-4.  バックアップ スケジュールを次のように構成します。
+    -   In **Backup Cycle**, click either the **Daily Backup** or **Weekly Backup** tab. For **Weekly Backup**, you need to specify the days of the week for the backup.
 
-    -   **バックアップ スケジューラ**で、[**毎日]**または**[毎週]**チェックボックスをオンにします。 **[毎週]**を選択した場合は、バックアップを実行する曜日を指定する必要があります。
-
-        > **警告**
+        > **Warning**
         >
-        > -   週次バックアップが有効になっている場合、ポイントインタイム リストア機能はデフォルトで有効になっており、無効にすることはできません。
-        > -   バックアップ スケジューラを週次から日次に変更すると、ポイントインタイム リストア機能は元の設定のままになります。必要に応じて手動で無効にすることができます。
+        > -   When weekly backup is enabled, the Point-in-time Restore feature is enabled by default and cannot be disabled.
+        > -   If you change the backup cycle from weekly to daily, the Point-in-time Restore feature remains its original setting. You can manually disable it if needed.
 
-    -   **[バックアップ時間]**で、毎日または毎週のクラスター バックアップの開始時刻をスケジュールします。
+    -   In **Backup Time**, schedule a start time for the daily or weekly cluster backup.
 
-        優先バックアップ時間を指定しない場合、 TiDB Cloud はデフォルトのバックアップ時間 (クラスターが配置されているリージョンのタイムゾーンの午前 2 時) を割り当てます。
+        If you do not specify a preferred backup time, TiDB Cloud assigns a default backup time, which is 2:00 AM in the time zone of the region where the cluster is located.
 
-        > **注記**
+        > **Note**
         >
-        > -   データ インポート ジョブが進行中の場合、バックアップ ジョブは自動的に遅延されます。データのインポート中またはクラスターのスケーリング中に手動バックアップを実行し**ないでください**。
+        > -   Backup jobs are automatically delayed when data import jobs are in progress. **DO NOT** run manual backups during data import or cluster scaling.
 
-    -   **バックアップ保持期間**で、最小バックアップ データ保持期間を構成します。デフォルトの期間は 7 日間です。ビジネスへの影響を最小限に抑えるには、ワークロードが少ない期間に自動バックアップをスケジュールすることをお勧めします。
+    -   In **Backup Retention**, configure the minimum backup data retention period. The default period is 7 days. To minimize the impact on business, it is recommended to schedule automatic backup during periods of low workloads.
 
-        > **注記**
+        > **Note**
         >
-        > -   最新のものを除くすべての自動バックアップは、その有効期間が保持期間を超えると削除されます。最新の自動バックアップは、手動で削除しない限り削除されません。これにより、誤って削除した場合でもクラスター データを復元できます。
-        > -   クラスターを削除すると、保存期間内の有効期間を持つ自動バックアップはごみ箱に移動されます。
-        > -   クラスターを削除した後も、既存の手動バックアップは手動で削除されるか、アカウントが閉じられるまで保持されます。
+        > -   All auto-backups, except the latest one, will be deleted if their lifetime exceeds the retention period. The latest auto-backup will not be deleted unless you delete it manually. This ensures that you can restore cluster data if accidental deletion occurs.
+        > -   After you delete a cluster, auto-backups with a lifetime within the retention period will be moved to the recycle bin.
 
-### デュアルリージョンバックアップをオンにする {#turn-on-dual-region-backup}
+### Turn on dual region backup {#turn-on-dual-region-backup}
 
-> **注記：**
+> **Note:**
 >
-> Google Cloud でホストされているTiDB Cloud Dedicated クラスタは、Google Cloud Storage とシームレスに連携します。Google Cloud Storage と同様に、 **TiDB Cloud Dedicated は、Google デュアルリージョンstorageと同じマルチリージョン コード内でのみデュアルリージョン ペアリングをサポートします**。たとえば、アジアでは現在、デュアルリージョンstorageにするには東京と大阪をペアリングする必要があります。詳細については、 [デュアルリージョン](https://cloud.google.com/storage/docs/locations#location-dr)を参照してください。
+> TiDB Cloud Dedicated clusters hosted on Google Cloud work seamlessly with Google Cloud Storage. Similar to Google Cloud Storage, **TiDB Cloud Dedicated supports dual-region pairing only within the same multi-region code as Google dual-region storage**. For example, in Asia, currently you must pair Tokyo and Osaka together for dual-region storage. For more information, refer to [Dual-regions](https://cloud.google.com/storage/docs/locations#location-dr).
 
-TiDB Cloud Dedicated は、クラスター リージョンから別のリージョンにバックアップを複製することで、デュアル リージョン バックアップをサポートします。この機能を有効にすると、すべてのバックアップが指定されたリージョンに自動的に複製されます。これにより、リージョン間のデータ保護と災害復旧機能が提供されます。約 99% のデータが 1 時間以内にセカンダリ リージョンに複製されると推定されます。
+TiDB Cloud Dedicated supports dual region backup by replicating backups from your cluster region to another different region. After you enable this feature, all backups are automatically replicated to the specified region. This provides cross-region data protection and disaster recovery capabilities. It is estimated that approximately 99% of the data can be replicated to the secondary region within an hour.
 
-デュアルリージョン バックアップのコストには、バックアップstorageの使用料とリージョン間のデータ転送料金の両方が含まれます。詳細については、 [データバックアップコスト](https://www.pingcap.com/tidb-dedicated-pricing-details#backup-storage-cost)を参照してください。
+Dual region backup costs include both backup storage usage and cross-region data transfer fees. For more information, refer to [Data Backup Cost](https://www.pingcap.com/tidb-dedicated-pricing-details#backup-storage-cost).
 
-デュアルリージョンバックアップを有効にするには、次の手順を実行します。
+To turn on dual region backup, perform the following steps:
 
-1.  TiDB Cloud Dedicated クラスターの**バックアップ**ページに移動します。
+1.  Navigate to the **Backup** page of a TiDB Cloud Dedicated cluster.
 
-2.  **[バックアップ設定]を**クリックします。
+2.  Click **Backup Setting**.
 
-3.  **デュアルリージョンバックアップ**スイッチを**オン**に切り替えます。
+3.  Toggle the **Dual Region Backup** switch to **On**.
 
-4.  **デュアルリージョン**ドロップダウン リストから、バックアップ ファイルを保存するリージョンを選択します。
+4.  From the **Secondary Region** drop-down list, select a region to store the backup files.
 
-5.  構成の変更をプレビューするには、 **「確認」**をクリックします。
+5.  Click **Save** to save changes.
 
-6.  変更を保存するには、もう一度**「確認」**をクリックします。
+### Turn off auto backup {#turn-off-auto-backup}
 
-### 自動バックアップをオフにする {#turn-off-auto-backup}
-
-> **注記**
+> **Note**
 >
-> 自動バックアップをオフにすると、ポイントインタイム復元もデフォルトでオフになります。
+> Turning off auto backup will also turn off point-in-time restore by default.
 
-自動バックアップをオフにするには、次の手順を実行します。
+To turn off auto backup, perform the following steps:
 
-1.  TiDB Cloud Dedicated クラスターの**バックアップ**ページに移動します。
+1.  Navigate to the **Backup** page of a TiDB Cloud Dedicated cluster.
 
-2.  **[バックアップ設定]を**クリックします。
+2.  Click **Backup Setting**.
 
-3.  **自動バックアップ**スイッチを**オフ**に切り替えます。
+3.  Toggle the **Auto Backup** switch to **Off**.
 
-4.  構成の変更をプレビューするには、 **「確認」**をクリックします。
+4.  Click **Save** to save changes.
 
-5.  変更を保存するには、もう一度**「確認」**をクリックします。
+### Turn off dual region backup {#turn-off-dual-region-backup}
 
-### デュアルリージョンバックアップをオフにする {#turn-off-dual-region-backup}
-
-> **ヒント**
+> **Tip**
 >
-> デュアル リージョン バックアップを無効にしても、セカンダリ リージョンのバックアップはすぐには削除されません。これらのバックアップは、バックアップ保持スケジュールに従って後でクリーンアップされます。すぐに削除するには、手動で[バックアップを削除する](#delete-backups)実行します。
+> Disabling dual region backup does not immediately delete the backups in the secondary region. These backups will be cleaned up later according to the backup retention schedule. To remove them immediately, you can manually [delete the backups](#delete-backups).
 
-デュアルリージョンバックアップをオフにするには、次の手順を実行します。
+To turn off dual region backup, perform the following steps:
 
-1.  TiDB Cloud Dedicated クラスターの**バックアップ**ページに移動します。
+1.  Navigate to the **Backup** page of a TiDB Cloud Dedicated cluster.
 
-2.  **[バックアップ設定]を**クリックします。
+2.  Click **Backup Setting**.
 
-3.  **デュアルリージョンバックアップ**スイッチを**オフ**に切り替えます。
+3.  Toggle the **Dual Region Backup** switch to **Off**.
 
-4.  構成の変更をプレビューするには、 **「確認」**をクリックします。
+4.  Click **Save** to save changes.
 
-5.  変更を保存するには、もう一度**「確認」**をクリックします。
+### Perform a manual backup {#perform-a-manual-backup}
 
-### 手動バックアップを実行する {#perform-a-manual-backup}
+Manual backups are user-initiated backups that enable you to back up your data to a known state as needed, and then restore to that state at any time.
 
-手動バックアップは、ユーザーが開始するバックアップであり、必要に応じてデータを既知の状態にバックアップし、いつでもその状態に復元することができます。
-
-TiDB Cloud Dedicated クラスターに手動バックアップを適用するには、次の手順を実行します。
-
-1.  クラスターの**「バックアップ」**タブに移動します。
-
-2.  **「手動バックアップ」**をクリックします。設定ウィンドウが表示されます。
-
-3.  **名前**を入力します。
-
-4.  **「確認」**をクリックします。すると、クラスター データがバックアップされます。
-
-### バックアップを削除する {#delete-backups}
-
-#### バックアップファイルを削除する {#delete-backup-files}
-
-既存のバックアップ ファイルを削除するには、次の手順を実行します。
-
-1.  クラスターの**「バックアップ」**タブに移動します。
-
-2.  削除するバックアップ ファイルの**[削除]**をクリックします。
-
-#### 実行中のバックアップジョブを削除する {#delete-a-running-backup-job}
-
-実行中のバックアップ ジョブを削除するには、 [**バックアップファイルを削除する**](#delete-backup-files)と同様です。
-
-1.  クラスターの**「バックアップ」**タブに移動します。
-
-2.  **保留中**または**実行中の**状態のバックアップ ファイルの**[削除]**をクリックします。
-
-## 復元する {#restore}
-
-### 新しいクラスターにデータを復元する {#restore-data-to-a-new-cluster}
-
-> **注記**
+> **Note**
 >
-> バックアップから TiDB クラスターを復元すると、復元プロセスでは元のタイムゾーン設定が上書きされずに保持されます。
+> -   Manual backups are retained indefinitely until you choose to delete them manually or your account is closed.
+> -   After a TiDB Cloud Dedicated cluster is deleted, its existing manual backups will be moved to the recycle bin and kept there until manually deleted or your account is closed.
 
-TiDB Cloud Dedicated クラスターのデータをバックアップから新しいクラスターに復元するには、次の手順を実行します。
+To apply a manual backup to your TiDB Cloud Dedicated cluster, perform the following steps:
 
-1.  クラスターの**「バックアップ」**タブに移動します。
+1.  Navigate to the **Backup** page of a cluster.
 
-2.  **「復元」**をクリックします。設定ウィンドウが表示されます。
+2.  In the upper-right corner, click **...** > **Manual Backup**.
 
-3.  **[復元モード]**で、 **[リージョンから復元]**を選択し、バックアップ ストアのリージョンを指定します。
+3.  In the displayed dialog, enter a **Name**.
 
-    > **注記**
+4.  Click **Confirm**. Then your cluster data is backed up.
+
+### Delete backups {#delete-backups}
+
+#### Delete backup files {#delete-backup-files}
+
+To delete an existing backup file, perform the following steps:
+
+1.  Navigate to the **Backup** page of a cluster.
+
+2.  Locate the corresponding backup file you want to delete, and click **...** > **Delete** in the **Action** column.
+
+#### Delete a running backup job {#delete-a-running-backup-job}
+
+To delete a running backup job, it is similar as [**Delete backup files**](#delete-backup-files).
+
+1.  Navigate to the **Backup** page of a cluster.
+
+2.  Locate the running backup job that is in the **Pending** or **Running** state, and click **...** > **Delete** in the **Action** column.
+
+## Restore {#restore}
+
+### Restore data to a new cluster {#restore-data-to-a-new-cluster}
+
+> **Note**
+>
+> When you restore a TiDB cluster from backups, the restore process retains the original time zone setting without overwriting it.
+
+To restore your TiDB Cloud Dedicated cluster data from a backup to a new cluster, take the following steps:
+
+1.  Navigate to the **Backup** tab of a cluster.
+
+2.  Click **Restore**. The setting window displays.
+
+3.  In **Restore Mode**, choose **Restore From Region**, indicating the region of backup stores.
+
+    > **Note**
     >
-    > -   **復元元リージョン**のデフォルト値は、バックアップ クラスターと同じです。
+    > -   The default value of the **Restore From Region** is the same as the backup cluster.
 
-4.  **復元モード**では、任意の時点のデータまたは選択したバックアップを新しいクラスターに復元することを選択します。
+4.  In **Restore Mode**, choose to restore data of any point in time or a selected backup to a new cluster.
 
     <SimpleTab>
      <div label="Select Time Point">
 
-    バックアップ保持期間内の任意の時点のデータを新しいクラスターに復元するには、**バックアップ設定**の**ポイントインタイム復元**がオンになっていることを確認してから、次の手順を実行します。
+    To restore data of any point in time within the backup retention to a new cluster, make sure that **Point-in-time Restore** in **Backup Setting** is on and then take the following steps:
 
-    -   **「時点の選択」**をクリックします。
-    -   復元したい**日付**と**時刻を**選択します。
+    -   Click **Select Time Point**.
+    -   Select **Date** and **Time** you want to restore to.
 
     </div>
 
     <div label="Select Backup Name">
 
-    選択したバックアップを新しいクラスターに復元するには、次の手順を実行します。
+    To restore a selected backup to the new cluster, take the following steps:
 
-    -   **バックアップ名の選択**をクリックします。
-    -   復元するバックアップを選択します。
+    -   Click **Select Backup Name**.
+    -   Select a backup you want to restore to.
 
     </div>
      </SimpleTab>
 
-5.  **[復元先リージョン]**で、 **[バックアップ設定]**で設定した**バックアップ ストレージリージョン**と同じリージョンを選択します。
+5.  In **Restore to Region**, select the same region as the **Primary Region** configured in the **Backup Setting**.
 
-6.  **「復元」**ウィンドウでは、必要に応じて次の変更を行うこともできます。
+6.  In the **Restore** window, you can also make the following changes if necessary:
 
-    -   クラスター名を設定します。
-    -   クラスターのポート番号を更新します。
-    -   クラスターのノード数、vCPU と RAM、およびstorageを増やします。
+    -   Set the cluster name.
+    -   Update the port number of the cluster.
+    -   Increase node number, vCPU and RAM, and storage for the cluster.
 
-7.  **[復元]**をクリックします。
+7.  Click **Restore**.
 
-    クラスターの復元プロセスが開始され、**パスワード設定**ダイアログ ボックスが表示されます。
+    The cluster restore process starts and the **Password Settings** dialog box is displayed.
 
-8.  **[パスワード設定]**ダイアログ ボックスで、クラスターに接続するためのルート パスワードを設定し、 **[保存]**をクリックします。
+8.  In the **Password Settings** dialog box, set the root password to connect to your cluster, and then click **Save**.
 
-### 削除されたクラスターを復元する {#restore-a-deleted-cluster}
+### Restore a deleted cluster {#restore-a-deleted-cluster}
 
-> **注記：**
+> **Note:**
 >
-> 削除されたクラスターを任意の時点に復元することはできません。復元するには、自動または手動のバックアップのみを選択できます。
+> You cannot restore a deleted cluster to any point in time. You can only select an automatic or manual backup to restore.
 
-削除したクラスターをごみ箱から復元するには、次の手順を実行します。
+To restore a deleted cluster from recycle bin, take the following steps:
 
-1.  [TiDB Cloudコンソール](https://tidbcloud.com)にログインします。
+1.  Log in to the [TiDB Cloud console](https://tidbcloud.com).
 
-2.  クリック<mdsvgicon name="icon-left-projects">左下隅で、複数のプロジェクトがある場合は対象プロジェクトに切り替えて、 **[プロジェクト設定]**をクリックします。</mdsvgicon>
+2.  Click <mdsvgicon name="icon-left-projects"> in the lower-left corner, switch to the target project if you have multiple projects, and then click **Project Settings**.</mdsvgicon>
 
-3.  プロジェクトの**「プロジェクト設定」**ページで、左側のナビゲーション ペインの**「ごみ箱」**をクリックし、復元するクラスターを見つけて、 **「アクション**」列の**「バックアップ」**をクリックします。
+3.  On the **Project Settings** page of your project, click **Recycle Bin** in the left navigation pane, locate the cluster you want to restore, and then click **Backups** in the **Action** column.
 
-4.  希望するバックアップ時間を見つけて、 **[アクション**] 列の**[復元]**をクリックします。
+4.  Locate your desired backup time, and then click **Restore** in the **Action** column.
 
-5.  **「復元」**ウィンドウで、必要に応じて次の変更を行います。
+5.  In the **Restore** window, make the following changes if necessary:
 
-    -   クラスターのポート番号を更新します。
-    -   クラスターのノード数、vCPU と RAM、およびstorageを増やします。
+    -   Update the port number of the cluster.
+    -   Increase the node number, vCPU and RAM, and storage for the cluster.
 
-6.  **[確認]**をクリックします。
+6.  Click **Confirm**.
 
-    クラスターの復元プロセスが開始され、**パスワード設定**ダイアログ ボックスが表示されます。
+    The cluster restore process starts and the **Password Settings** dialog box is displayed.
 
-7.  **[パスワード設定]**ダイアログ ボックスで、クラスターに接続するためのルート パスワードを設定し、 **[保存]**をクリックします。
+7.  In the **Password Settings** dialog box, set the root password to connect to your cluster, and then click **Save**.

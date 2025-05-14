@@ -1,36 +1,36 @@
 ---
 title: TiCDC Glossary
-summary: TiCDC に関する用語とその定義を学びます。
+summary: Learn the terms about TiCDC and their definitions.
 ---
 
-# TiCDC 用語集 {#ticdc-glossary}
+# TiCDC Glossary {#ticdc-glossary}
 
-この用語集では、TiCDC 関連の用語と定義について説明します。これらの用語は、TiCDC ログ、監視メトリック、構成、およびドキュメントに表示されます。
+This glossary provides TiCDC-related terms and definitions. These terms appear in TiCDC logs, monitoring metrics, configurations, and documents.
 
-TiDB関連の用語と定義については、 [TiDB 用語集](/glossary.md)を参照してください。
+For TiDB-related terms and definitions, refer to [TiDB glossary](/glossary.md).
 
-## Ｃ {#c}
+## C {#c}
 
-### 捕獲 {#capture}
+### Capture {#capture}
 
-クラスターのレプリケーション タスクが実行される単一の TiCDC インスタンス。複数のキャプチャによって TiCDC クラスターが形成されます。
+A single TiCDC instance on which the replication task of the cluster runs. Multiple captures form a TiCDC cluster.
 
-### 変更されたデータ {#changed-data}
+### Changed data {#changed-data}
 
-DML によるデータ変更と DDL によるテーブル スキーマ変更を含む、上流の TiDB クラスターから TiCDC に書き込まれるデータ。
+The data to be written to TiCDC from the upstream TiDB cluster, including the DML-caused data changes and the DDL-caused table schema changes.
 
-### チェンジフィード {#changefeed}
+### Changefeed {#changefeed}
 
-TiCDC の増分レプリケーション タスク。TiDB クラスター内の複数のテーブルのデータ変更ログを指定されたダウンストリームに出力します。
+An incremental replication task in TiCDC, which outputs the data change logs of several tables in a TiDB cluster to the designated downstream.
 
-## お {#o}
+## O {#o}
 
-### 所有者 {#owner}
+### Owner {#owner}
 
-TiCDC クラスターを管理し、クラスターのレプリケーション タスクをスケジュールする特別なロールの[捕獲](#capture) 。所有者はキャプチャによって選出され、一度に最大 1 人の所有者が存在します。
+A [capture](#capture) of a special role that manages the TiCDC cluster and schedules replication tasks of the cluster. An owner is elected by captures and there is at most one owner at any time.
 
-## ポ {#p}
+## P {#p}
 
-### プロセッサ {#processor}
+### Processor {#processor}
 
-TiCDC レプリケーション タスクは、TiCDC インスタンスにデータ テーブルを割り当て、プロセッサはこれらのテーブルのレプリケーション処理ユニットを参照します。プロセッサ タスクには、変更されたデータのプル、ソート、復元、および配布が含まれます。
+TiCDC replication tasks allocate data tables on TiCDC instances, and the processor refers to the replication processing unit of these tables. Processor tasks include pulling, sorting, restoring, and distributing changed data.

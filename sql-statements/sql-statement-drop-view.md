@@ -1,13 +1,13 @@
 ---
 title: DROP VIEW | TiDB SQL Statement Reference
-summary: TiDB データベースの DROP VIEW の使用法の概要。
+summary: An overview of the usage of DROP VIEW for the TiDB database.
 ---
 
-# ドロップビュー {#drop-view}
+# DROP VIEW {#drop-view}
 
-このステートメントは、現在選択されているデータベースからビュー オブジェクトを削除します。ビューが参照する基本テーブルには影響しません。
+This statement drops a view object from the currently selected database. It does not affect any base tables that a view references.
 
-## 概要 {#synopsis}
+## Synopsis {#synopsis}
 
 ```ebnf+diagram
 DropViewStmt ::=
@@ -20,7 +20,7 @@ TableName ::=
     Identifier ('.' Identifier)?
 ```
 
-## 例 {#examples}
+## Examples {#examples}
 
 ```sql
 mysql> CREATE TABLE t1 (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, c1 INT NOT NULL);
@@ -71,11 +71,11 @@ mysql> SELECT * FROM t1;
 5 rows in set (0.00 sec)
 ```
 
-## MySQL 互換性 {#mysql-compatibility}
+## MySQL compatibility {#mysql-compatibility}
 
-TiDB の`DROP VIEW`ステートメントは MySQL と完全に互換性があります。互換性の違いが見つかった場合は、 [バグを報告する](https://docs.pingcap.com/tidb/stable/support) 。
+The `DROP VIEW` statement in TiDB is fully compatible with MySQL. If you find any compatibility differences, [report a bug](https://docs.pingcap.com/tidb/stable/support).
 
-## 参照 {#see-also}
+## See also {#see-also}
 
--   [ビューを作成](/sql-statements/sql-statement-create-view.md)
--   [テーブルを削除](/sql-statements/sql-statement-drop-table.md)
+-   [CREATE VIEW](/sql-statements/sql-statement-create-view.md)
+-   [DROP TABLE](/sql-statements/sql-statement-drop-table.md)

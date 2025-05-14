@@ -1,86 +1,78 @@
 ---
-title: Import Sample Data
-summary: UI 経由でサンプル データをTiDB Cloudにインポートする方法を学習します。
+title: Import Sample Data into TiDB Cloud Dedicated
+summary: Learn how to import sample data into TiDB Cloud Dedicated via the UI.
 ---
 
-# サンプルデータのインポート {#import-sample-data}
+# Import Sample Data into TiDB Cloud Dedicated {#import-sample-data-into-tidb-cloud-dedicated}
 
-このドキュメントでは、UI 経由でサンプル データをTiDB Cloudにインポートする方法について説明します。使用するサンプル データは、Capital Bikeshare データ ライセンス契約に基づいてリリースされた Capital Bikeshare のシステム データです。サンプル データをインポートする前に、1 つの TiDB クラスターが必要です。
+This document describes how to import the sample data into TiDB Cloud Dedicated via the UI. The sample data used is the system data from Capital Bikeshare, released under the Capital Bikeshare Data License Agreement. Before importing the sample data, you need to have one TiDB cluster.
 
 <SimpleTab>
 <div label="Amazon S3">
 
-1.  ターゲット クラスターの**インポート**ページを開きます。
+1.  Open the **Import** page for your target cluster.
 
-    1.  [TiDB Cloudコンソール](https://tidbcloud.com/)にログインし、プロジェクトの[**クラスター**](https://tidbcloud.com/console/clusters)ページに移動します。
+    1.  Log in to the [TiDB Cloud console](https://tidbcloud.com/) and navigate to the [**Clusters**](https://tidbcloud.com/console/clusters) page of your project.
 
-        > **ヒント：**
+        > **Tip:**
         >
-        > 複数のプロジェクトがある場合は、<mdsvgicon name="icon-left-projects">左下隅にある をクリックして、別のプロジェクトに切り替えます。</mdsvgicon>
+        > If you have multiple projects, you can click <mdsvgicon name="icon-left-projects"> in the lower-left corner and switch to another project.</mdsvgicon>
 
-    2.  ターゲット クラスターの名前をクリックして概要ページに移動し、左側のナビゲーション ペインで**[インポート]**をクリックします。
+    2.  Click the name of your target cluster to go to its overview page, and then click **Import** in the left navigation pane.
 
-2.  **S3 からデータをインポート**を選択します。
+2.  Select **Import data from S3**.
 
-    このクラスターにデータを初めてインポートする場合は、 **「Amazon S3 からのインポート」**を選択します。
+    If this is your first time importing data into this cluster, select **Import From Amazon S3**.
 
-3.  **「Amazon S3 からのデータのインポート」**ページで、次のソース データ情報を設定します。
+3.  On the **Import Data from Amazon S3** page, configure the following source data information:
 
-    -   **インポート ファイル数**: サンプル データの場合は、**複数のファイル**を選択します。
-    -   **含まれるスキーマ ファイル**: サンプル データの場合は、 **[はい]**を選択します。
-        -   ソースからスキーマとデータをインポートするには、 **[はい]**を選択します。このオプションは、テーブルを作成するための SQL スクリプトをインポートし、S3 に保存されている対応するテーブル データを TiDB にインポートします。
-        -   事前に作成されたテーブルにインポートするには、 **[いいえ]**を選択します。これにより、TiDB に事前にテーブルを作成し、データをインポートするテーブルを選択できます。この場合、インポートするテーブルを最大 1000 個選択できます。左側のナビゲーション ペインで**[SQL エディター] を**クリックして、テーブルを作成できます。SQL エディターの使用方法の詳細については、 [AI支援SQLエディターでデータを探索](/tidb-cloud/explore-data-with-chat2query.md)参照してください。
-    -   **データ形式**: **SQL**を選択します。TiDB TiDB Cloud は、 `.gzip` 、 `.gz` 、 `.zstd` 、 `.zst` 、 `.snappy`の形式の圧縮ファイルのインポートをサポートしています。圧縮された SQL ファイルをインポートする場合は、ファイルに`${db_name}.${table_name}.${suffix}.sql.${compress}`形式で名前を付けます。16 `${suffix}`オプションで、「000001」などの任意の整数にすることができます。たとえば、 `trips.000001.sql.gz`ファイルを`bikeshare.trips`テーブルにインポートする場合は、ファイルの名前を`bikeshare.trips.000001.sql.gz`に変更できます。圧縮する必要があるのはデータ ファイルのみであり、データベース ファイルやテーブル スキーマ ファイルは圧縮する必要がないことに注意してください。Snappy 圧縮ファイルは[公式Snappyフォーマット](https://github.com/google/snappy)である必要があります。Snappy 圧縮の他のバリアントはサポートされていません。
-    -   **フォルダー URI**または**ファイル URI** : サンプル データ URI `s3://tidbcloud-sample-data/data-ingestion/`を入力します。
-    -   **バケット アクセス**: サンプル データの場合、バケットにアクセスするにはロール ARN のみを使用できます。独自のデータの場合は、AWS アクセス キーまたはロール ARN のいずれかを使用してバケットにアクセスできます。
-        -   **AWS ロール ARN** : `arn:aws:iam::801626783489:role/import-sample-access`と入力します。
-        -   **AWS アクセスキー**: サンプルデータの場合はこのオプションをスキップします。
+    -   **Import File Count**: for the sample data, select **Multiple files**.
+    -   **Included Schema Files**: for the sample data, select **Yes**.
+    -   **Data Format**: select **SQL**.
+    -   **Folder URI** or **File URI**: enter the sample data URI `s3://tidbcloud-sample-data/data-ingestion/`.
+    -   **Bucket Access**: for the sample data, you can only use a Role ARN to access its bucket. For your own data, you can use either an AWS access key or a Role ARN to access your bucket.
+        -   **AWS Role ARN**: enter `arn:aws:iam::801626783489:role/import-sample-access`.
+        -   **AWS Access Key**: skip this option for the sample data.
 
-    バケットのリージョンがクラスターと異なる場合は、クロスリージョンのコンプライアンスを確認してください。
-
-4.  **[接続]** &gt; **[インポートの開始]**をクリックします。
+4.  Click **Connect** > **Start Import**.
 
 </div>
 <div label="Google Cloud">
 
-1.  ターゲット クラスターの**インポート**ページを開きます。
+1.  Open the **Import** page for your target cluster.
 
-    1.  [TiDB Cloudコンソール](https://tidbcloud.com/)にログインし、プロジェクトの[**クラスター**](https://tidbcloud.com/console/clusters)ページに移動します。
+    1.  Log in to the [TiDB Cloud console](https://tidbcloud.com/) and navigate to the [**Clusters**](https://tidbcloud.com/console/clusters) page of your project.
 
-        > **ヒント：**
+        > **Tip:**
         >
-        > 複数のプロジェクトがある場合は、<mdsvgicon name="icon-left-projects">左下隅にある をクリックして、別のプロジェクトに切り替えます。</mdsvgicon>
+        > If you have multiple projects, you can click <mdsvgicon name="icon-left-projects"> in the lower-left corner and switch to another project.</mdsvgicon>
 
-    2.  ターゲット クラスターの名前をクリックして概要ページに移動し、左側のナビゲーション ペインで**[インポート]**をクリックします。
+    2.  Click the name of your target cluster to go to its overview page, and then click **Import** in the left navigation pane.
 
-2.  右上隅の**「データのインポート」を**クリックします。
+2.  Click **Import Data** in the upper-right corner.
 
-    このクラスタにデータを初めてインポートする場合は、 **[GCS からのインポート]**を選択します。
+    If this is your first time importing data into this cluster, select **Import From GCS**.
 
-3.  **GCS からのデータのインポート**ページで、次のソース データ情報を設定します。
+3.  On the **Import Data from GCS** page, configure the following source data information:
 
-    -   **インポート ファイル数**: サンプル データの場合は、**複数のファイル**を選択します。
-    -   **含まれるスキーマ ファイル**: サンプル データの場合は、 **[はい]**を選択します。
-        -   ソースからスキーマとデータをインポートするには、 **[はい]**を選択します。このオプションは、テーブルを作成するための SQL スクリプトをインポートし、S3 に保存されている対応するテーブル データを TiDB にインポートします。
-        -   事前に作成されたテーブルにインポートするには、 **[いいえ]**を選択します。これにより、TiDB に事前にテーブルを作成し、データをインポートするテーブルを選択できます。この場合、インポートするテーブルを最大 1000 個選択できます。左側のナビゲーション ペインで**[SQL エディター] を**クリックして、テーブルを作成できます。SQL エディターの使用方法の詳細については、 [AI支援SQLエディターでデータを探索](/tidb-cloud/explore-data-with-chat2query.md)参照してください。
-    -   **データ形式**: **SQL**を選択します。TiDB TiDB Cloud は、 `.gzip` 、 `.gz` 、 `.zstd` 、 `.zst` 、 `.snappy`の形式の圧縮ファイルのインポートをサポートしています。圧縮された SQL ファイルをインポートする場合は、ファイルに`${db_name}.${table_name}.${suffix}.sql.${compress}`形式で名前を付けます。 `${suffix}`オプションで、「000001」などの任意の整数にすることができます。たとえば、 `trips.000001.sql.gz`ファイルを`bikeshare.trips`テーブルにインポートする場合は、ファイル名を`bikeshare.trips.000001.sql.gz`に変更できます。圧縮する必要があるのはデータ ファイルのみであり、データベース スキーマ ファイルやテーブル スキーマ ファイルは圧縮する必要がないことに注意してください。圧縮する必要があるのはデータ ファイルのみであり、データベース スキーマ ファイルやテーブル スキーマ ファイルは圧縮する必要がないことに注意してください。Snappy 圧縮ファイルは[公式Snappyフォーマット](https://github.com/google/snappy)である必要があります。Snappy 圧縮の他のバリアントはサポートされていません。
-    -   **フォルダー URI**または**ファイル URI** : サンプル データ URI `gs://tidbcloud-samples-us-west1/`を入力します。
-    -   **バケット アクセス**: GCS IAMロールを使用してバケットにアクセスできます。詳細については、 [GCS アクセスを構成する](/tidb-cloud/config-s3-and-gcs-access.md#configure-gcs-access)参照してください。
+    -   **Import File Count**: for the sample data, select **Multiple files**.
+    -   **Included Schema Files**: for the sample data, select **Yes**.
+    -   **Data Format**: select **SQL**.
+    -   **Folder URI** or **File URI**: enter the sample data URI `gs://tidbcloud-samples-us-west1/`.
+    -   **Bucket Access**: you can use a GCS IAM Role to access your bucket. For more information, see [Configure GCS access](/tidb-cloud/config-s3-and-gcs-access.md#configure-gcs-access).
 
-    バケットのリージョンがクラスターと異なる場合は、クロスリージョンのコンプライアンスを確認してください。
+    If the region of the bucket is different from your cluster, confirm the compliance of cross region.
 
-4.  **[接続]** &gt; **[インポートの開始]**をクリックします。
+4.  Click **Connect** > **Start Import**.
 
 </div>
 </SimpleTab>
 
-データのインポートの進行状況が**「完了」**と表示されたら、サンプル データとデータベース スキーマがTiDB Cloudのデータベースに正常にインポートされています。
+When the data import progress shows **Completed**, you have successfully imported the sample data and the database schema to your database in TiDB Cloud.
 
-クラスターがデータのインポート プロセスを完了すると、データベースにサンプル データが取得されます。
+After connecting to the cluster, you can run some queries in your terminal to check the result, for example:
 
-クラスターに接続した後、ターミナルでいくつかのクエリを実行して結果を確認できます。次に例を示します。
-
-1.  「12th &amp; U St NW」から始まる旅行記録を取得します。
+1.  Get the trip records starting at "12th &#x26; U St NW":
 
     ```sql
     use bikeshare;
@@ -107,7 +99,7 @@ summary: UI 経由でサンプル データをTiDB Cloudにインポートする
     +-----------------+---------------+---------------------+---------------------+--------------------+------------------+-------------------------------------------+----------------+-----------+------------+-----------+------------+---------------+
     ```
 
-2.  電動自転車での旅行記録を取得:
+2.  Get the trip records with electric bikes:
 
     ```sql
     use bikeshare;

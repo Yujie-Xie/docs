@@ -1,22 +1,18 @@
 ---
 title: SHOW IMPORT
-summary: TiDB での SHOW IMPORT の使用法の概要。
+summary: An overview of the usage of SHOW IMPORT in TiDB.
 ---
 
-# インポートを表示 {#show-import}
+# SHOW IMPORT {#show-import}
 
-`SHOW IMPORT`ステートメントは、TiDB で作成された IMPORT ジョブを表示するために使用されます。このステートメントでは、現在のユーザーによって作成されたジョブのみを表示できます。
+The `SHOW IMPORT` statement is used to show the IMPORT jobs created in TiDB. This statement can only show jobs created by the current user.
 
-> **注記：**
->
-> この機能は[TiDB Cloudサーバーレス](https://docs.pingcap.com/tidbcloud/select-cluster-tier#tidb-cloud-serverless)クラスターでは使用できません。
+## Required privileges {#required-privileges}
 
-## 必要な権限 {#required-privileges}
+-   `SHOW IMPORT JOBS`: if a user has the `SUPER` privilege, this statement shows all import jobs in TiDB. Otherwise, this statement only shows jobs created by the current user.
+-   `SHOW IMPORT JOB <job-id>`: only the creator of an import job or users with the `SUPER` privilege can use this statement to view a specific job.
 
--   `SHOW IMPORT JOBS` : ユーザーに`SUPER`権限がある場合、このステートメントは TiDB 内のすべてのインポート ジョブを表示します。それ以外の場合、このステートメントは現在のユーザーによって作成されたジョブのみを表示します。
--   `SHOW IMPORT JOB <job-id>` : インポート ジョブの作成者または`SUPER`権限を持つユーザーのみが、このステートメントを使用して特定のジョブを表示できます。
-
-## 概要 {#synopsis}
+## Synopsis {#synopsis}
 
 ```ebnf+diagram
 ShowImportJobsStmt ::=
@@ -26,24 +22,24 @@ ShowImportJobStmt ::=
     'SHOW' 'IMPORT' 'JOB' JobID
 ```
 
-`SHOW IMPORT`ステートメントの出力フィールドは次のように記述されます。
+The output fields of the `SHOW IMPORT` statement are described as follows:
 
-| カラム         | 説明                                                                                   |
-| ----------- | ------------------------------------------------------------------------------------ |
-| ジョブID       | タスクのID                                                                               |
-| データソース      | データソースに関する情報                                                                         |
-| ターゲットテーブル   | 対象テーブルの名前                                                                            |
-| 段階          | ジョブの現在のフェーズ`validating` `importing`含む`add-index`                                     |
-| 状態          | ジョブの現在のステータス`pending` `failed`作成されたがまだ開始されていない）、 `running` `finished`含まれます`canceled` |
-| ソースファイルのサイズ | ソースファイルのサイズ                                                                          |
-| インポートされた行   | ターゲットテーブルに読み書きされたデータ行の数                                                              |
-| 結果メッセージ     | インポートが失敗した場合、このフィールドはエラー メッセージを返します。それ以外の場合は空になります。                                  |
-| 作成時間        | タスクが作成された時間                                                                          |
-| 開始時間        | タスクが開始された時間                                                                          |
-| 終了時間        | タスクが終了した時間                                                                           |
-| 作成者         | タスクを作成したデータベースユーザーの名前                                                                |
+| Column           | Description                                                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Job_ID           | The ID of the task                                                                                                                      |
+| Data_Source      | Information about the data source                                                                                                       |
+| Target_Table     | The name of the target table                                                                                                            |
+| Phase            | The current phase of the job, including `importing`, `validating`, and `add-index`                                                      |
+| Status           | The current status of the job, including `pending` (means created but not started yet), `running`, `canceled`, `failed`, and `finished` |
+| Source_File_Size | The size of the source file                                                                                                             |
+| Imported_Rows    | The number of data rows that have been read and written to the target table                                                             |
+| Result_Message   | If the import fails, this field returns the error message. Otherwise, it is empty.                                                      |
+| Create_Time      | The time when the task is created                                                                                                       |
+| Start_Time       | The time when the task is started                                                                                                       |
+| End_Time         | The time when the task is ended                                                                                                         |
+| Created_By       | The name of the database user who creates the task                                                                                      |
 
-## 例 {#example}
+## Example {#example}
 
 ```sql
 SHOW IMPORT JOBS;
@@ -68,11 +64,11 @@ SHOW IMPORT JOB 60001;
     +--------+--------------------+--------------+----------+-------+---------+------------------+---------------+----------------+----------------------------+------------+----------+------------+
     1 row in set (0.01 sec)
 
-## MySQL 互換性 {#mysql-compatibility}
+## MySQL compatibility {#mysql-compatibility}
 
-このステートメントは、MySQL 構文に対する TiDB 拡張です。
+This statement is a TiDB extension to MySQL syntax.
 
-## 参照 {#see-also}
+## See also {#see-also}
 
 -   [`IMPORT INTO`](/sql-statements/sql-statement-import-into.md)
 -   [`CANCEL IMPORT JOB`](/sql-statements/sql-statement-cancel-import-job.md)

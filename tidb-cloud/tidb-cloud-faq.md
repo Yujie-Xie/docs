@@ -1,203 +1,207 @@
 ---
 title: TiDB Cloud FAQs
-summary: TiDB Cloudに関するよくある質問 (FAQ) について説明します。
+summary: Learn about the most frequently asked questions (FAQs) relating to TiDB Cloud.
 ---
 
-# TiDB Cloudよくある質問 {#tidb-cloud-faqs}
+# TiDB Cloud FAQs {#tidb-cloud-faqs}
 
 <!-- markdownlint-disable MD026 -->
 
-このドキュメントには、 TiDB Cloudに関するよくある質問が記載されています。
+This document lists the most frequently asked questions about TiDB Cloud.
 
-## 一般的なよくある質問 {#general-faqs}
+## General FAQs {#general-faqs}
 
-### TiDB Cloudとは何ですか? {#what-is-tidb-cloud}
+### What is TiDB Cloud? {#what-is-tidb-cloud}
 
-TiDB Cloud は、直感的なコンソールから制御できる完全に管理されたクラウド インスタンスを使用して、TiDB クラスターの導入、管理、保守をさらに簡単にします。Amazon Web Services または Google Cloud に簡単に導入して、ミッション クリティカルなアプリケーションを迅速に構築できます。
+TiDB Cloud makes deploying, managing, and maintaining your TiDB clusters even simpler with a fully managed cloud instance that you control through an intuitive console. You are able to easily deploy on Amazon Web Services or Google Cloud to quickly build mission-critical applications.
 
-TiDB Cloud を使用すると、ほとんどトレーニングを受けていない開発者や DBA でも、インフラストラクチャ管理やクラスターの展開など、かつては複雑だったタスクを簡単に処理できるため、データベースの複雑さではなくアプリケーションに集中できます。また、ボタンをクリックするだけで TiDB クラスターをスケールインまたはスケールアウトできるため、必要な量と期間だけデータベースをプロビジョニングできるため、高価なリソースを無駄にすることがなくなります。
+TiDB Cloud allows developers and DBAs with little or no training to handle once-complex tasks such as infrastructure management and cluster deployment with ease, to focus on your applications, not the complexities of your database. And by scaling TiDB clusters in or out with a simple click of a button, you no longer waste costly resources because you are able to provision your databases for exactly how much and how long you need them.
 
-### TiDB とTiDB Cloudの関係は何ですか? {#what-is-the-relationship-between-tidb-and-tidb-cloud}
+### What is the relationship between TiDB and TiDB Cloud? {#what-is-the-relationship-between-tidb-and-tidb-cloud}
 
-TiDB はオープンソース データベースであり、独自のデータ センター、自己管理型クラウド環境、またはその 2 つのハイブリッドで TiDB Self-Managed を実行したい組織にとって最適なオプションです。
+TiDB is an open-source database and is the best option for organizations who want to run TiDB Self-Managed in their own data centers, in a self-managed cloud environment, or in a hybrid of the two.
 
-TiDB Cloud は、TiDB の完全に管理されたクラウド データベース サービスです。使いやすい Web ベースの管理コンソールを備えており、ミッション クリティカルな本番環境の TiDB クラスターを管理できます。
+TiDB Cloud is a fully managed cloud Database as a Service of TiDB. It has an easy-to-use web-based management console to let you manage TiDB clusters for mission-critical production environments.
 
-### TiDB Cloud はMySQL と互換性がありますか? {#is-tidb-cloud-compatible-with-mysql}
+### Is TiDB Cloud compatible with MySQL? {#is-tidb-cloud-compatible-with-mysql}
 
-現在、 TiDB Cloud は、トリガー、ストアド プロシージャ、およびユーザー定義関数を除く、 MySQL 5.7および MySQL 8.0 の構文の大部分をサポートしています。詳細については、 [MySQLとの互換性](/mysql-compatibility.md)参照してください。
+Currently, TiDB Cloud supports the majority of MySQL 5.7 and MySQL 8.0 syntax with the exception of triggers, stored procedures, and user-defined functions. For more details, see [Compatibility with MySQL](/mysql-compatibility.md).
 
-### TiDB Cloudを操作するために使用できるプログラミング言語は何ですか? {#what-programming-languages-can-i-use-to-work-with-tidb-cloud}
+### What programming languages can I use to work with TiDB Cloud? {#what-programming-languages-can-i-use-to-work-with-tidb-cloud}
 
-MySQL クライアントまたはドライバーでサポートされている任意の言語を使用できます。
+You can use any language supported by the MySQL client or driver.
 
-### TiDB Cloud はどこで実行できますか? {#where-can-i-run-tidb-cloud}
+### Where can I run TiDB Cloud? {#where-can-i-run-tidb-cloud}
 
-TiDB Cloudは現在、Amazon Web Services と Google Cloud で利用できます。
+TiDB Cloud is currently available on Amazon Web Services and Google Cloud.
 
-### TiDB Cloud は、異なるクラウド サービス プロバイダー間の VPC ピアリングをサポートしていますか? {#does-tidb-cloud-support-vpc-peering-between-different-cloud-service-providers}
+### Does TiDB Cloud support VPC peering between different cloud service providers? {#does-tidb-cloud-support-vpc-peering-between-different-cloud-service-providers}
 
-いいえ。
+No.
 
-### TiDB Cloudではどのバージョンの TiDB がサポートされていますか? {#what-versions-of-tidb-are-supported-on-tidb-cloud}
+### What versions of TiDB are supported on TiDB Cloud? {#what-versions-of-tidb-are-supported-on-tidb-cloud}
 
--   2025 年 1 月 2 日以降、新しいTiDB Cloud Dedicated クラスターのデフォルトの TiDB バージョンは[バージョン8.1.2](https://docs.pingcap.com/tidb/v8.1/release-8.1.2)なります。
--   2024 年 2 月 21 日より、 TiDB Cloud Serverless クラスターの TiDB バージョンは[バージョン7.1.3](https://docs.pingcap.com/tidb/v7.1/release-7.1.3)なります。
+-   Starting from January 2, 2025, the default TiDB version for new TiDB Cloud Dedicated clusters is [v8.1.2](https://docs.pingcap.com/tidb/v8.1/release-8.1.2).
+-   Starting from February 21, 2024, the TiDB version for TiDB Cloud Serverless clusters is [v7.1.3](https://docs.pingcap.com/tidb/v7.1/release-7.1.3).
 
-詳細については[TiDB Cloudリリースノート](/tidb-cloud/tidb-cloud-release-notes.md)参照してください。
+For more information, see [TiDB Cloud Release Notes](/tidb-cloud/tidb-cloud-release-notes.md).
 
-### どの企業が TiDB またはTiDB Cloud を本番で使用していますか? {#what-companies-are-using-tidb-or-tidb-cloud-in-production}
+### What companies are using TiDB or TiDB Cloud in production? {#what-companies-are-using-tidb-or-tidb-cloud-in-production}
 
-TiDB は、金融サービス、ゲーム、電子商取引など、さまざまな業界の 1,500 社を超えるグローバル企業から信頼されています。当社のユーザーには、Square (米国)、Shopee (シンガポール)、China UnionPay (中国) などがあります。詳細については、 [ケーススタディ](https://www.pingcap.com/customers/)ご覧ください。
+TiDB is trusted by over 1500 global enterprises across a variety of industries, such as financial services, gaming, and e-commerce. Our users include Square (US), Shopee (Singapore), and China UnionPay (China). See our [case studies](https://www.pingcap.com/customers/) for specific details.
 
-### SLA とはどのようなものですか? {#what-does-the-sla-look-like}
+### What does the SLA look like? {#what-does-the-sla-look-like}
 
-TiDB Cloud は99.99% の SLA を提供します。詳細については[TiDB Cloudサービスのサービス レベル契約](https://www.pingcap.com/legal/service-level-agreement-for-tidb-cloud-services/)参照してください。
+TiDB Cloud provides 99.99% SLA. For details, see [Service Level Agreement for TiDB Cloud Services](https://www.pingcap.com/legal/service-level-agreement-for-tidb-cloud-services/).
 
-### TiDB Cloudについて詳しく知るにはどうすればいいですか? {#how-can-i-learn-more-about-tidb-cloud}
+### What does BETA mean in TiDB Cloud? {#what-does-beta-mean-in-tidb-cloud}
 
-TiDB Cloudについて学ぶ最良の方法は、ステップバイステップのチュートリアルに従うことです。まずは以下のトピックを確認してください。
+BETA is the public preview stage of a TiDB Cloud feature or offering before it becomes generally available (GA).
 
--   [TiDB Cloudの紹介](/tidb-cloud/tidb-cloud-intro.md)
--   [始める](/tidb-cloud/tidb-cloud-quickstart.md)
--   [TiDB Cloudサーバーレスクラスタを作成する](/tidb-cloud/create-tidb-cluster-serverless.md)
+### How can I learn more about TiDB Cloud? {#how-can-i-learn-more-about-tidb-cloud}
 
-### クラスターを削除するときに、 <code>XXX&#39;s Org/default project/Cluster0</code>何を参照しますか? {#what-does-code-xxx-s-org-default-project-cluster0-code-refer-to-when-deleting-a-cluster}
+The best way to learn about TiDB Cloud is to follow our step-by-step tutorial. Check out the following topics to get started:
 
-TiDB Cloudでは、クラスターは組織名、プロジェクト名、クラスター名の組み合わせによって一意に識別されます。 目的のクラスターを確実に削除するには、そのクラスターの完全修飾名 (例: `XXX's Org/default project/Cluster0` ) を指定する必要があります。
+-   [TiDB Cloud Introduction](/tidb-cloud/tidb-cloud-intro.md)
+-   [Get Started](/tidb-cloud/tidb-cloud-quickstart.md)
+-   [Create a TiDB Cloud Serverless Cluster](/tidb-cloud/create-tidb-cluster-serverless.md)
 
-## アーキテクチャよくある質問 {#architecture-faqs}
+### What does <code>XXX's Org/default project/Cluster0</code> refer to when deleting a cluster? {#what-does-code-xxx-s-org-default-project-cluster0-code-refer-to-when-deleting-a-cluster}
 
-### TiDB クラスターにはさまざまなコンポーネントがあります。TiDB、TiKV、およびTiFlashノードとは何ですか? {#there-are-different-components-in-my-tidb-cluster-what-are-tidb-tikv-and-tiflash-nodes}
+In TiDB Cloud, a cluster is uniquely identified by the combination of the organization name, project name, and cluster name. To ensure that you are deleting the intended cluster, you need to provide the fully qualified name of that cluster, such as `XXX's Org/default project/Cluster0`.
 
-TiDB は、TiKV またはTiFlashストアから返されたクエリからデータを集約する SQL コンピューティングレイヤーです。TiDB は水平方向にスケーラブルです。TiDB ノードの数を増やすと、クラスターが処理できる同時クエリの数が増えます。
+## Architecture FAQs {#architecture-faqs}
 
-TiKV は、OLTP データを保存するために使用されるトランザクション ストアです。TiKV 内のすべてのデータは複数のレプリカ (デフォルトでは 3 つのレプリカ) に自動的に保持されるため、TiKV はネイティブの高可用性を備え、自動フェイルオーバーをサポートします。TiKV は水平方向にスケーラブルであり、トランザクション ストアの数を増やすと OLTP スループットが向上します。
+### There are different components in my TiDB cluster. What are TiDB, TiKV, and TiFlash nodes? {#there-are-different-components-in-my-tidb-cluster-what-are-tidb-tikv-and-tiflash-nodes}
 
-TiFlashは、トランザクション ストア (TiKV) からデータをリアルタイムで複製し、リアルタイム OLAP ワークロードをサポートする分析storageです。TiKV とは異なり、 TiFlash はデータを列に格納して分析処理を高速化します。TiFlash は水平方向にも拡張可能で、 TiFlashノードを増やすとTiFlashstorageとコンピューティング容量が増加します。
+TiDB is the SQL computing layer that aggregates data from queries returned from TiKV or TiFlash stores. TiDB is horizontally scalable; increasing the number of TiDB nodes will increase the number of concurrent queries the cluster can handle.
 
-PD、Placement Driver は、クラスターのメタデータを保存するため、TiDB クラスター全体の「頭脳」です。TiKV ノードからリアルタイムで報告されるデータ分散状態に応じて、特定の TiKV ノードにデータ スケジューリング コマンドを送信します。TiDB TiDB Cloudでは、各クラスターの PD は PingCAP によって管理されており、表示または保守することはできません。
+TiKV is the transactional store used to store OLTP data. All the data in TiKV is automatically maintained in multiple replicas (three replicas by default), so TiKV has native high availability and supports automatic failover. TiKV is horizontally scalable; increasing the number of transactional stores will increase OLTP throughput.
 
-### TiDB は TiKV ノード間でデータをどのように複製しますか? {#how-does-tidb-replicate-data-between-the-tikv-nodes}
+TiFlash is the analytical storage that replicates data from the transactional store (TiKV) in real-time and supports real-time OLAP workloads. Unlike TiKV, TiFlash stores data in columns to accelerate analytical processing. TiFlash is also horizontally scalable; increasing TiFlash nodes will increase OLAP storage and computing capacity.
 
-TiKV はキーと値の空間をキー範囲に分割し、各キー範囲は「リージョン」として扱われます。TiKV では、データはクラスター内のすべてのノードに分散され、リージョンが基本単位として使用されます。PD は、クラスター内のすべてのノードにリージョンを可能な限り均等に分散 (スケジュール) する役割を担います。
+PD, the Placement Driver is "the brain" of the entire TiDB cluster, as it stores the metadata of the cluster. It sends data scheduling commands to specific TiKV nodes according to the data distribution state reported by TiKV nodes in real-time. On TiDB Cloud, PD of each cluster is managed by PingCAP and you can not see or maintain it.
 
-TiDB は、 Raftコンセンサス アルゴリズムを使用して、リージョンごとにデータを複製します。異なるノードに保存されているリージョンの複数のレプリカがRaftグループを形成します。
+### How does TiDB replicate data between the TiKV nodes? {#how-does-tidb-replicate-data-between-the-tikv-nodes}
 
-各データの変更はRaftログとして記録されます。RaftRaftのレプリケーションにより、データはRaftグループの複数のノードに安全かつ確実に複製されます。
+TiKV divides the key-value space into key ranges, and each key range is treated as a "Region". In TiKV, data is distributed among all nodes in a cluster and uses the Region as the basic unit. PD is responsible for spreading (scheduling) Regions as evenly as possible across all nodes in a cluster.
 
-## 高可用性に関するFAQ {#high-availability-faq}
+TiDB uses the Raft consensus algorithm to replicate data by Regions. Multiple replicas of a Region stored in different nodes form a Raft Group.
 
-### TiDB Cloud はどのようにして高可用性を確保するのでしょうか? {#how-does-tidb-cloud-ensure-high-availability}
+Each data change is recorded as a Raft log. Through Raft log replication, data is safely and reliably replicated to multiple nodes of the Raft Group.
 
-TiDB はRaftコンセンサス アルゴリズムを使用して、データの可用性を高め、 Raftグループのstorage全体に安全に複製できるようにします。データは TiKV ノード間で冗長的にコピーされ、マシンまたはデータ センターの障害から保護するために異なるアベイラビリティ ゾーンに配置されます。自動フェイルオーバーにより、TiDB はサービスの常時稼働を保証します。
+## High availability FAQ {#high-availability-faq}
 
-SaaS (Software as a Service) プロバイダーとして、当社はデータ セキュリティを真剣に受け止めています。1 [サービス組織コントロール (SOC) 2 タイプ 1 準拠](https://www.pingcap.com/press-release/pingcap-successfully-completes-soc-2-type-1-examination-for-tidb-cloud/)要求される厳格な情報セキュリティ ポリシーと手順を確立しています。これにより、お客様のデータの安全性、可用性、機密性が確保されます。
+### How does TiDB Cloud ensure high availability? {#how-does-tidb-cloud-ensure-high-availability}
 
-## 移行に関するFAQ {#migration-faq}
+TiDB uses the Raft consensus algorithm to ensure that data is highly available and safely replicated throughout storage in Raft Groups. Data is redundantly copied between TiKV nodes and placed in different Availability Zones to protect against machine or data center failure. With automatic failover, TiDB ensures that your service is always on.
 
-### 別の RDBMS からTiDB Cloudへの簡単な移行パスはありますか? {#is-there-an-easy-migration-path-from-another-rdbms-to-tidb-cloud}
+As a Software as a Service (SaaS) provider, we take data security seriously. We have established strict information security policies and procedures required by the [Service Organization Control (SOC) 2 Type 1 compliance](https://www.pingcap.com/press-release/pingcap-successfully-completes-soc-2-type-1-examination-for-tidb-cloud/). This ensures that your data is secure, available, and confidential.
 
-TiDB は MySQL と高い互換性があります。自社ホストの MySQL インスタンスのデータでも、パブリック クラウドが提供する RDS サービスのデータでも、MySQL 互換データベースから TiDB にデータをスムーズに移行できます。詳細については、 [データ移行を使用してMySQL互換データベースをTiDB Cloudに移行する](/tidb-cloud/migrate-from-mysql-using-data-migration.md)参照してください。
+## Migration FAQ {#migration-faq}
 
-## バックアップと復元に関するFAQ {#backup-and-restore-faq}
+### Is there an easy migration path from another RDBMS to TiDB Cloud? {#is-there-an-easy-migration-path-from-another-rdbms-to-tidb-cloud}
 
-### TiDB Cloud は増分バックアップをサポートしていますか? {#does-tidb-cloud-support-incremental-backups}
+TiDB is highly compatible with MySQL. You can migrate data from any MySQL-compatible databases to TiDB smoothly, whether the data is from a self-hosted MySQL instance or RDS service provided by the public cloud. For more information, see [Migrate MySQL-Compatible Databases to TiDB Cloud Using Data Migration](/tidb-cloud/migrate-from-mysql-using-data-migration.md).
 
-いいえ。クラスターのバックアップ保持期間内の任意の時点にデータを復元する必要がある場合は、PITR (ポイントインタイムリカバリ) を使用できます。詳細については、 [TiDB Cloud Dedicated クラスタで PITR を使用する](/tidb-cloud/backup-and-restore.md#turn-on-auto-backup)または[TiDB Cloud Serverless クラスターで PITR を使用する](/tidb-cloud/backup-and-restore-serverless.md#restore)参照してください。
+## Backup and restore FAQ {#backup-and-restore-faq}
 
-## HTAP に関するよくある質問 {#htap-faqs}
+### Does TiDB Cloud support incremental backups? {#does-tidb-cloud-support-incremental-backups}
 
-### TiDB Cloud の HTAP 機能をどのように活用すればよいですか? {#how-do-i-make-use-of-tidb-cloud-s-htap-capabilities}
+No. If you need to restore data to any point in time within the cluster's backup retention, you can use PITR (Point-in-time Recovery). For more information, see [Use PITR in a TiDB Cloud Dedicated cluster](/tidb-cloud/backup-and-restore.md#turn-on-auto-backup) or [Use PITR in a TiDB Cloud Serverless cluster](/tidb-cloud/backup-and-restore-serverless.md#restore).
 
-従来、データベースには、オンライン トランザクション処理 (OLTP) データベースとオンライン分析処理 (OLAP) データベースの 2 種類があります。OLTP リクエストと OLAP リクエストは、多くの場合、異なる分離されたデータベースで処理されます。この従来のアーキテクチャでは、OLTP データベースから OLAP のデータ ウェアハウスまたはデータ レイクにデータを移行することは、時間がかかり、エラーが発生しやすいプロセスです。
+## HTAP FAQs {#htap-faqs}
 
-ハイブリッド トランザクション分析処理 (HTAP) データベースであるTiDB Cloudは、OLTP (TiKV) ストアと OLAP ( TiFlash ) ストア間でデータを確実に自動複製することで、システムアーキテクチャを簡素化し、メンテナンスの複雑さを軽減し、トランザクション データのリアルタイム分析をサポートします。一般的な HTAP の使用例は、ユーザーのパーソナライゼーション、AI による推奨、不正検出、ビジネス インテリジェンス、リアルタイム レポートです。
+### How do I make use of TiDB Cloud's HTAP capabilities? {#how-do-i-make-use-of-tidb-cloud-s-htap-capabilities}
 
-その他の HTAP シナリオについては、 [データプラットフォームを簡素化する HTAP データベースの構築方法](https://pingcap.com/blog/how-we-build-an-htap-database-that-simplifies-your-data-platform)を参照してください。
+Traditionally, there are two types of databases: Online Transactional Processing (OLTP) databases and Online Analytical Processing (OLAP) databases. OLTP and OLAP requests are often processed in different and isolated databases. With this traditional architecture, migrating data from an OLTP database to a data warehouse or data lake for OLAP is a long and error-prone process.
 
-### データをTiFlashに直接インポートできますか? {#can-i-import-my-data-directly-to-tiflash}
+As a Hybrid Transactional Analytical Processing (HTAP) database, TiDB Cloud helps you simplify your system architecture, reduce maintenance complexity, and support real-time analytics on transactional data by automatically replicating data reliably between the OLTP (TiKV) store and OLAP (TiFlash) store. Typical HTAP use cases are user personalization, AI recommendation, fraud detection, business intelligence, and real-time reporting.
 
-いいえ。TiDB TiDB Cloudにデータをインポートすると、そのデータは TiKV にインポートされます。インポートが完了したら、SQL ステートメントを使用して、 TiFlashに複製するテーブルを指定できます。その後、TiDB はそれに応じて、指定されたテーブルのレプリカをTiFlashに作成します。詳細については、 [TiFlashレプリカを作成する](/tiflash/create-tiflash-replicas.md)参照してください。
+For further HTAP scenarios, refer to [How We Build an HTAP Database That Simplifies Your Data Platform](https://pingcap.com/blog/how-we-build-an-htap-database-that-simplifies-your-data-platform).
 
-### TiFlashデータを CSV 形式でエクスポートできますか? {#can-i-export-tiflash-data-in-the-csv-format}
+### Can I import my data directly to TiFlash? {#can-i-import-my-data-directly-to-tiflash}
 
-いいえ。TiFlash データはエクスポートできません。
+No. When you import data to TiDB Cloud, the data is imported to TiKV. After the import is complete, you can use SQL statements to specify which tables to be replicated to TiFlash. Then, TiDB will create the replicas of the specified tables in TiFlash accordingly. For more information, see [Create TiFlash Replicas](/tiflash/create-tiflash-replicas.md).
 
-## Securityよくある質問 {#security-faqs}
+### Can I export TiFlash data in the CSV format? {#can-i-export-tiflash-data-in-the-csv-format}
 
-### TiDB Cloud は安全ですか? {#is-tidb-cloud-secure}
+No. TiFlash data cannot be exported.
 
-TiDB Cloudでは、保存されているすべてのデータが暗号化され、すべてのネットワーク トラフィックは Transport Layer Security (TLS) を使用して暗号化されます。
+## Security FAQs {#security-faqs}
 
--   保存データの暗号化は、暗号化されたstorageボリュームを使用して自動化されます。
--   クライアントとクラスター間で転送されるデータの暗号化は、 TiDB Cloud WebサーバーTLS と TiDB クラスター TLS を使用して自動化されます。
+### Is TiDB Cloud secure? {#is-tidb-cloud-secure}
 
-### TiDB Cloud はビジネスデータをどのように暗号化しますか? {#how-does-tidb-cloud-encrypt-my-business-data}
+In TiDB Cloud, all data at rest is encrypted, and all network traffic is encrypted using Transport Layer Security (TLS).
 
-TiDB Cloud は、データベース データやバックアップ データなどの保存中のビジネス データに対して、デフォルトでstorage暗号化を使用します。TiDB TiDB Cloud、転送中のデータに対して TLS 暗号化が必要であり、TiDB、PD、TiKV、 TiFlash間のデータベース クラスター内のデータに対してもコンポーネント レベルの TLS 暗号化が必要です。
+-   Encryption of data at rest is automated using encrypted storage volumes.
+-   Encryption of data in transit between your client and your cluster is automated using TiDB Cloud web server TLS and TiDB cluster TLS.
 
-TiDB Cloudにおけるビジネス データ暗号化に関する詳しい情報については、 [TiDB Cloudサポート](/tidb-cloud/tidb-cloud-support.md)お問い合わせください。
+### How does TiDB Cloud encrypt my business data? {#how-does-tidb-cloud-encrypt-my-business-data}
 
-### TiDB Cloud はどのバージョンの TLS をサポートしていますか? {#what-versions-of-tls-does-tidb-cloud-support}
+TiDB Cloud uses storage volume encryption by default for your business data at rest, including your database data and backup data. TiDB Cloud requires TLS encryption for data in transit, and also requires component-level TLS encryption for data in your database cluster between TiDB, PD, TiKV, and TiFlash.
 
-TiDB Cloud はTLS 1.2 または TLS 1.3 をサポートしています。
+To get more specific information about business data encryption in TiDB Cloud, contact [TiDB Cloud Support](/tidb-cloud/tidb-cloud-support.md).
 
-### VPC でTiDB Cloud を実行できますか? {#can-i-run-tidb-cloud-in-my-vpc}
+### What versions of TLS does TiDB Cloud support? {#what-versions-of-tls-does-tidb-cloud-support}
 
-いいえ。TiDB TiDB Cloudは Database-as-a-Service (DBaaS) であり、 TiDB Cloud VPC 内でのみ実行されます。クラウド コンピューティング管理サービスであるTiDB Cloud は、物理ハードウェアのセットアップやソフトウェアのインストールを必要とせずにデータベースへのアクセスを提供します。
+TiDB Cloud supports TLS 1.2 or TLS 1.3.
 
-### TiDB クラスターは安全ですか? {#is-my-tidb-cluster-secure}
+### Can I run TiDB Cloud in my VPC? {#can-i-run-tidb-cloud-in-my-vpc}
 
-TiDB Cloudでは、ニーズに応じてTiDB Cloud Dedicated クラスターまたはTiDB Cloud Serverless クラスターのいずれかを使用できます。
+No. TiDB Cloud is Database-as-a-Service (DBaaS) and runs only in the TiDB Cloud VPC. As a cloud computing managed service, TiDB Cloud provides access to a database without requiring the setup of physical hardware and the installation of software.
 
-TiDB Cloud Dedicated クラスターの場合、 TiDB Cloud は次の対策でクラスターのセキュリティを確保します。
+### Is my TiDB cluster secure? {#is-my-tidb-cluster-secure}
 
--   各クラスターに独立したサブアカウントと VPC を作成します。
--   外部接続を分離するためのファイアウォール ルールを設定します。
--   転送中のクラスター データを暗号化するために、各クラスターに対してサーバー側の TLS 証明書とコンポーネント レベルの TLS 証明書を作成します。
--   許可された送信元 IP アドレスのみがクラスターにアクセスできるように、各クラスターに IP アクセス ルールを指定します。
+In TiDB Cloud, you can use either a TiDB Cloud Dedicated cluster or a TiDB Cloud Serverless cluster according to your needs.
 
-TiDB Cloud Serverless クラスターの場合、 TiDB Cloud は次の対策でクラスターのセキュリティを確保します。
+For TiDB Cloud Dedicated clusters, TiDB Cloud ensures cluster security with the following measures:
 
--   各クラスターに独立したサブアカウントを作成します。
--   外部接続を分離するためのファイアウォール ルールを設定します。
--   転送中のクラスター データを暗号化するためのクラスターサーバーTLS 証明書を提供します。
+-   Creates independent sub-accounts and VPCs for each cluster.
+-   Sets up firewall rules to isolate external connections.
+-   Creates server-side TLS certificates and component-level TLS certificates for each cluster to encrypt cluster data in transit.
+-   Provide IP access rules for each cluster to ensure that only allowed source IP addresses can access your cluster.
 
-### TiDB クラスター内のデータベースに接続するにはどうすればよいですか? {#how-do-i-connect-to-my-database-in-a-tidb-cluster}
+For TiDB Cloud Serverless clusters, TiDB Cloud ensures cluster security with the following measures:
+
+-   Creates independent sub-accounts for each cluster.
+-   Sets up firewall rules to isolate external connections.
+-   Provides cluster server TLS certificates to encrypt cluster data in transit.
+
+### How do I connect to my database in a TiDB cluster? {#how-do-i-connect-to-my-database-in-a-tidb-cluster}
 
 <SimpleTab>
 <div label="TiDB Cloud Dedicated">
 
-TiDB Cloud Dedicated クラスターの場合、クラスターに接続する手順は次のように簡略化されます。
+For a TiDB Cloud Dedicated cluster, the steps to connect to your cluster are simplified as follows:
 
-1.  ネットワークを承認します。
-2.  データベース ユーザーとログイン資格情報を設定します。
-3.  クラスターサーバー用の TLS をダウンロードして構成します。
-4.  SQL クライアントを選択し、 TiDB Cloud UI に表示される自動生成された接続文字列を取得し、その文字列を使用して SQL クライアント経由でクラスターに接続します。
+1.  Authorize your network.
+2.  Set up your database users and login credentials.
+3.  Download and configure TLS for your cluster server.
+4.  Choose a SQL client, get an auto-generated connection string displayed on the TiDB Cloud UI, and then connect to your cluster through the SQL client using the string.
 
-詳細については[TiDB Cloud専用クラスタに接続する](/tidb-cloud/connect-to-tidb-cluster.md)参照してください。
+For more information, see [Connect to Your TiDB Cloud Dedicated Cluster](/tidb-cloud/connect-to-tidb-cluster.md).
 
 </div>
 
 <div label="TiDB Cloud Serverless">
 
-TiDB Cloud Serverless クラスターの場合、クラスターに接続する手順は次のように簡略化されます。
+For a TiDB Cloud Serverless cluster, the steps to connect to your cluster are simplified as follows:
 
-1.  データベース ユーザーとログイン資格情報を設定します。
-2.  SQL クライアントを選択し、 TiDB Cloud UI に表示される自動生成された接続文字列を取得し、その文字列を使用して SQL クライアント経由でクラスターに接続します。
+1.  Set a database user and login credential.
+2.  Choose a SQL client, get an auto-generated connection string displayed on the TiDB Cloud UI, and then connect to your cluster through the SQL client using the string.
 
-詳細については[TiDB Cloudサーバーレスクラスタに接続する](/tidb-cloud/connect-to-tidb-cluster-serverless.md)参照してください。
+For more information, see [Connect to Your TiDB Cloud Serverless Cluster](/tidb-cloud/connect-to-tidb-cluster-serverless.md).
 
 </div>
 </SimpleTab>
 
-## サポートFAQ {#support-faq}
+## Support FAQ {#support-faq}
 
-### 顧客にはどのようなサポートが提供されますか? {#what-support-is-available-for-customers}
+### What support is available for customers? {#what-support-is-available-for-customers}
 
-TiDB Cloud Cloud は、金融サービス、電子商取引、エンタープライズ アプリケーション、ゲームなど、さまざまな業界の 1,500 社を超えるグローバル企業のミッション クリティカルなユース ケースを実行してきた TiDB と同じチームによってサポートされています。TiDB TiDB Cloud は、各ユーザーに無料の基本サポート プランを提供しており、有料プランにアップグレードしてサービスを拡張できます。詳細については、 [TiDB Cloudサポート](/tidb-cloud/tidb-cloud-support.md)参照してください。
+TiDB Cloud is supported by the same team behind TiDB, which has run mission-critical use cases for over 1500 global enterprises across industries including financial services, e-commerce, enterprise applications, and gaming. TiDB Cloud offers a free basic support plan for each user and you can upgrade to a paid plan for extended services. For more information, see [TiDB Cloud Support](/tidb-cloud/tidb-cloud-support.md).
 
-### TiDB Cloudがダウンしているかどうかを確認するにはどうすればよいですか? {#how-do-i-check-if-tidb-cloud-is-down}
+### How do I check if TiDB Cloud is down? {#how-do-i-check-if-tidb-cloud-is-down}
 
-TiDB Cloudの現在の稼働状況を[システムステータス](https://status.tidbcloud.com/)ページで確認できます。
+You can check the current uptime status of TiDB Cloud on the [System Status](https://status.tidbcloud.com/) page.

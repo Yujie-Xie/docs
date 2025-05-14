@@ -1,39 +1,39 @@
 ---
 title: Changefeed Billing
-summary: TiDB Cloudの変更フィードに対する課金について説明します。
+summary: Learn about billing for changefeeds in TiDB Cloud.
 aliases: ['/tidbcloud/tidb-cloud-billing-tcu']
 ---
 
-# チェンジフィード課金 {#changefeed-billing}
+# Changefeed Billing {#changefeed-billing}
 
-## RCU コスト {#rcu-cost}
+## RCU cost {#rcu-cost}
 
-TiDB Cloud は、 [チェンジフィード](/tidb-cloud/changefeed-overview.md)の容量を TiCDC レプリケーション容量単位 (RCU) で測定します。クラスターに[チェンジフィードを作成する](/tidb-cloud/changefeed-overview.md#create-a-changefeed)設定すると、適切な仕様を選択できます。RCU が高いほど、レプリケーション パフォーマンスが向上します。これらの TiCDC 変更フィード RCU に対して料金が発生します。
+TiDB Cloud measures the capacity of [changefeeds](/tidb-cloud/changefeed-overview.md) in TiCDC Replication Capacity Units (RCUs). When you [create a changefeed](/tidb-cloud/changefeed-overview.md#create-a-changefeed) for a cluster, you can select an appropriate specification. The higher the RCU, the better the replication performance. You will be charged for these TiCDC changefeed RCUs.
 
-### TiCDC RCU の数 {#number-of-ticdc-rcus}
+### Number of TiCDC RCUs {#number-of-ticdc-rcus}
 
-次の表は、変更フィードの仕様と対応するレプリケーション パフォーマンスを示しています。
+The following table lists the specifications and corresponding replication performances for changefeeds:
 
-| 仕様       | 最大のレプリケーションパフォーマンス |
-| -------- | ------------------ |
-| 2 RCU    | 5,000行/秒           |
-| 4 つの RCU | 10,000行/秒          |
-| 8 RCU    | 20,000行/秒          |
-| 16 RCU   | 40,000 行/秒         |
-| 24 RCU   | 60,000行/秒          |
-| 32 RCU   | 80,000行/秒          |
-| 40 RCU   | 100,000行/秒         |
+| Specification | Maximum replication performance |
+| ------------- | ------------------------------- |
+| 2 RCUs        | 5,000 rows/s                    |
+| 4 RCUs        | 10,000 rows/s                   |
+| 8 RCUs        | 20,000 rows/s                   |
+| 16 RCUs       | 40,000 rows/s                   |
+| 24 RCUs       | 60,000 rows/s                   |
+| 32 RCUs       | 80,000 rows/s                   |
+| 40 RCUs       | 100,000 rows/s                  |
 
-> **注記：**
+> **Note:**
 >
-> 上記のパフォーマンス データは参考用であり、シナリオによって異なる場合があります。本番環境で changefeed 機能を使用する前に、実際のワークロード テストを実施することを強くお勧めします。さらにサポートが必要な場合は、 [TiDB Cloudサポート](/tidb-cloud/tidb-cloud-support.md#get-support-for-a-cluster)お問い合わせください。
+> The preceding performance data is for reference only and might vary in different scenarios. It is strongly recommended that you conduct a real workload test before using the changefeed feature in a production environment. For further assistance, contact [TiDB Cloud support](/tidb-cloud/tidb-cloud-support.md).
 
-### 価格 {#price}
+### Price {#price}
 
-各 TiCDC RCU でサポートされているリージョンとTiDB Cloudの価格については、 [チェンジフィードコスト](https://www.pingcap.com/tidb-cloud-pricing-details/#changefeed-cost)参照してください。
+To learn about the supported regions and the price of TiDB Cloud for each TiCDC RCU, see [Changefeed Cost](https://www.pingcap.com/tidb-cloud-pricing-details/#changefeed-cost).
 
-## プライベートデータリンクのコスト {#private-data-link-cost}
+## Private Data Link cost {#private-data-link-cost}
 
-**プライベート リンク**または**プライベート サービス コネクトの**ネットワーク接続方法を選択した場合は、追加の**プライベート データ リンク**コストが発生します。これらの料金は[データ転送コスト](https://www.pingcap.com/tidb-dedicated-pricing-details/#data-transfer-cost)カテゴリに該当します。
+If you choose the **Private Link** or **Private Service Connect** network connectivity method, additional **Private Data Link** costs will be incurred. These charges fall under the [Data Transfer Cost](https://www.pingcap.com/tidb-dedicated-pricing-details/#data-transfer-cost) category.
 
-**プライベート データ リンク**の料金は**0.01 ドル/GiB**で、**処理済みデータ**[AWS インターフェースエンドポイントの料金](https://aws.amazon.com/privatelink/pricing/#Interface_Endpoint_pricing)および**コンシューマー データ処理**[Google Cloud プライベート サービス コネクトの料金](https://cloud.google.com/vpc/pricing#psc-forwarding-rules)と同じです。
+The price of **Private Data Link** is **$0.01/GiB**, the same as **Data Processed** of [AWS Interface Endpoint pricing](https://aws.amazon.com/privatelink/pricing/#Interface_Endpoint_pricing) and **Consumer data processing** of [Google Cloud Private Service Connect pricing](https://cloud.google.com/vpc/pricing#psc-forwarding-rules).

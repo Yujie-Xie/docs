@@ -1,109 +1,139 @@
 ---
 title: Changefeed DDL Replication
-summary: TiCDC でサポートされている DDL ステートメントといくつかの特殊なケースについて学習します。
+summary: Learn about the DDL statements supported by TiCDC and some special cases.
 ---
 
-# チェンジフィード DDL レプリケーション {#changefeed-ddl-replication}
+# Changefeed DDL Replication {#changefeed-ddl-replication}
 
-このドキュメントでは、TiCDC での DDL レプリケーションのルールと特殊なケースについて説明します。
+This document describes the rules and special cases of DDL replication in TiCDC.
 
-## DDL 許可リスト {#ddl-allow-list}
+## DDL allow list {#ddl-allow-list}
 
-現在、TiCDC は許可リストを使用して、DDL ステートメントをレプリケートするかどうかを決定します。許可リスト内の DDL ステートメントのみがダウンストリームにレプリケートされます。許可リストにない DDL ステートメントはレプリケートされません。
+Currently, TiCDC uses an allow list to determine whether to replicate a DDL statement. Only the DDL statements in the allow list are replicated to the downstream. The DDL statements not in the allow list are not replicated.
 
-TiCDC でサポートされている DDL ステートメントの許可リストは次のとおりです。
+The allow list of DDL statements supported by TiCDC is as follows:
 
--   データベースを作成する
--   データベースを削除
--   テーブルを作成する
--   ドロップテーブル
--   列を追加
--   ドロップ列
--   インデックスの作成 / インデックスの追加
--   インデックスを削除
--   テーブルを切り捨てる
--   列を変更する
--   テーブル名の変更
--   列のデフォルト値を変更する
--   テーブルコメントの変更
--   インデックス名の変更
--   パーティションを追加
--   パーティションを削除する
--   パーティションを切り捨てる
--   ビューを作成
--   ドロップビュー
--   テーブル文字セットを変更する
--   データベースの文字セットを変更する
--   テーブルを回復する
--   主キーを追加する
--   主キーを削除する
--   自動 ID をリベースする
--   テーブルインデックスの可視性を変更する
--   交換パーティション
--   パーティションを再編成する
--   テーブルTTLを変更する
--   テーブルを変更してTTLを削除
+-   create database
+-   drop database
+-   create table
+-   drop table
+-   add column
+-   drop column
+-   create index / add index
+-   drop index
+-   truncate table
+-   modify column
+-   rename table
+-   alter column default value
+-   alter table comment
+-   rename index
+-   add partition
+-   drop partition
+-   truncate partition
+-   create view
+-   drop view
+-   alter table character set
+-   alter database character set
+-   recover table
+-   add primary key
+-   drop primary key
+-   rebase auto id
+-   alter table index visibility
+-   exchange partition
+-   reorganize partition
+-   alter table ttl
+-   alter table remove ttl
 
-## DDLレプリケーションの考慮事項 {#ddl-replication-considerations}
+## DDL replication considerations {#ddl-replication-considerations}
 
-### <code>ADD INDEX</code>および<code>CREATE INDEX</code> DDL の非同期実行 {#asynchronous-execution-of-code-add-index-code-and-code-create-index-code-ddls}
+### Asynchronous execution of <code>ADD INDEX</code> and <code>CREATE INDEX</code> DDLs {#asynchronous-execution-of-code-add-index-code-and-code-create-index-code-ddls}
 
-ダウンストリームが TiDB の場合、TiCDC は`ADD INDEX`および`CREATE INDEX` DDL 操作を非同期で実行し、変更フィード レプリケーションの待機レイテンシーへの影響を最小限に抑えます。つまり、 `ADD INDEX`および`CREATE INDEX` DDL をダウンストリーム TiDB に複製して実行した後、TiCDC は DDL 実行の完了を待たずにすぐに戻ります。これにより、後続の DML 実行がブロックされることが回避されます。
+When the downstream is TiDB, TiCDC executes `ADD INDEX` and `CREATE INDEX` DDL operations asynchronously to minimize the impact on changefeed replication latency. This means that, after replicating `ADD INDEX` and `CREATE INDEX` DDLs to the downstream TiDB for execution, TiCDC returns immediately without waiting for the completion of the DDL execution. This avoids blocking subsequent DML executions.
 
-ダウンストリームで`ADD INDEX`または`CREATE INDEX` DDL 操作を実行中に、TiCDC が同じテーブルの次の DDL 操作を実行すると、この DDL 操作が`queueing`状態で長時間ブロックされる可能性があります。これにより、TiCDC がこの DDL 操作を繰り返し実行することになり、再試行に時間がかかりすぎると、レプリケーション タスクが失敗する可能性があります。v8.1.2 以降では、TiCDC がダウンストリーム データベースの`SUPER`権限を持っている場合、定期的に`ADMIN SHOW DDL JOBS`実行して、非同期で実行された DDL タスクのステータスを確認します。TiCDC は、レプリケーションを続行する前に、インデックス作成が完了するまで待機します。これにより、レプリケーションのレイテンシーが長くなる可能性がありますが、レプリケーション タスクの失敗を回避できます。
+During the execution of the `ADD INDEX` or `CREATE INDEX` DDL operation in the downstream, when TiCDC executes the next DDL operation of the same table, this DDL operation might be blocked in the `queueing` state for a long time. This can cause TiCDC to repeatedly execute this DDL operation, and if retries take too long, it might lead to replication task failure. Starting from v8.1.2, if TiCDC has the `SUPER` permission of the downstream database, it periodically runs `ADMIN SHOW DDL JOBS` to check the status of asynchronously executed DDL tasks. TiCDC will wait for index creation to complete before proceeding with replication. Although this might increase replication latency, it avoids replication task failure.
 
-> **注記：**
+> **Note:**
 >
-> -   特定のダウンストリーム DML の実行がレプリケーションが完了していないインデックスに依存している場合、これらの DML の実行が遅くなり、TiCDC レプリケーションのレイテンシーに影響する可能性があります。
-> -   DDL をダウンストリームにレプリケートする前に、TiCDC ノードがクラッシュした場合、またはダウンストリームが他の書き込み操作を実行している場合、DDL レプリケーションが失敗する可能性は非常に低くなります。ダウンストリームをチェックして、それが発生するかどうかを確認できます。
+> -   If the execution of certain downstream DMLs relies on indexes that have not completed replication, these DMLs might be executed slowly, thereby affecting TiCDC replication latency.
+> -   Before replicating DDLs to the downstream, if a TiCDC node crashes or if the downstream is performing other write operations, the DDL replication has an extremely low probability of failure. You can check the downstream to see whether that occurs.
 
-### テーブル名の変更に関する DDL レプリケーションの考慮事項 {#ddl-replication-considerations-for-renaming-tables}
+### DDL replication considerations for renaming tables {#ddl-replication-considerations-for-renaming-tables}
 
-レプリケーション プロセス中に一部のコンテキストが不足しているため、TiCDC では`RENAME TABLE` DDL のレプリケーションにいくつかの制約があります。
+Due to the lack of some context during the replication process, TiCDC has some constraints on the replication of `RENAME TABLE` DDLs.
 
-#### DDL ステートメントで単一のテーブルの名前を変更する {#rename-a-single-table-in-a-ddl-statement}
+#### Rename a single table in a DDL statement {#rename-a-single-table-in-a-ddl-statement}
 
-DDL ステートメントが単一のテーブルの名前を変更する場合、TiCDC は古いテーブル名がフィルター ルールと一致する場合にのみ DDL ステートメントを複製します。次に例を示します。
+If a DDL statement renames a single table, TiCDC only replicates the DDL statement when the old table name matches the filter rule. The following is an example.
 
-changefeed の構成ファイルが次のようになっていると仮定します。
-
-```toml
-[filter]
-rules = ['test.t*']
-```
-
-TiCDC はこのタイプの DDL を次のように処理します。
-
-| DDL                                   | 複製するかどうか              | 取り扱い理由                                                                                  |
-| ------------------------------------- | --------------------- | --------------------------------------------------------------------------------------- |
-| `RENAME TABLE test.t1 TO test.t2`     | 複製する                  | `test.t1`フィルタルールに一致します                                                                  |
-| `RENAME TABLE test.t1 TO ignore.t1`   | 複製する                  | `test.t1`フィルタルールに一致します                                                                  |
-| `RENAME TABLE ignore.t1 TO ignore.t2` | 無視する                  | `ignore.t1`フィルタルールに一致しません                                                               |
-| `RENAME TABLE test.n1 TO test.t1`     | エラーを報告してレプリケーションを終了する | `test.n1`フィルタルールに一致しませんが、 `test.t1`フィルタルールに一致します。この操作は不正です。この場合、エラー メッセージを参照して対処してください。 |
-| `RENAME TABLE ignore.t1 TO test.t1`   | エラーを報告してレプリケーションを終了する | 上記と同じ理由です。                                                                              |
-
-#### DDL ステートメントで複数のテーブルの名前を変更する {#rename-multiple-tables-in-a-ddl-statement}
-
-DDL ステートメントで複数のテーブルの名前を変更する場合、TiCDC は、古いデータベース名、古いテーブル名、および新しいデータベース名がすべてフィルター ルールに一致する場合にのみ、DDL ステートメントを複製します。
-
-また、TiCDC はテーブル名を入れ替える`RENAME TABLE` DDL をサポートしていません。以下は例です。
-
-changefeed の構成ファイルが次のようになっていると仮定します。
+Assume that the configuration file of your changefeed is as follows:
 
 ```toml
 [filter]
 rules = ['test.t*']
 ```
 
-TiCDC はこのタイプの DDL を次のように処理します。
+TiCDC processes this type of DDL as follows:
 
-| DDL                                                                        | 複製するかどうか | 取り扱い理由                                                                                                                  |
-| -------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `RENAME TABLE test.t1 TO test.t2, test.t3 TO test.t4`                      | 複製する     | すべてのデータベース名とテーブル名はフィルター ルールと一致します。                                                                                      |
-| `RENAME TABLE test.t1 TO test.ignore1, test.t3 TO test.ignore2`            | 複製する     | 古いデータベース名、古いテーブル名、および新しいデータベース名は、フィルター ルールと一致します。                                                                       |
-| `RENAME TABLE test.t1 TO ignore.t1, test.t2 TO test.t22;`                  | エラーを報告する | 新しいデータベース名`ignore`フィルター ルールと一致しません。                                                                                     |
-| `RENAME TABLE test.t1 TO test.t4, test.t3 TO test.t1, test.t4 TO test.t3;` | エラーを報告する | `RENAME TABLE` DDL は 1 つの DDL ステートメント内で`test.t1`と`test.t3`の名前を入れ替えますが、TiCDC はこれを正しく処理できません。この場合、エラー メッセージを参照して対処してください。 |
+| DDL                                   | Whether to replicate                     | Reason for the handling                                                                                                                                                                                  |
+| ------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RENAME TABLE test.t1 TO test.t2`     | Replicate                                | `test.t1` matches the filter rule                                                                                                                                                                        |
+| `RENAME TABLE test.t1 TO ignore.t1`   | Replicate                                | `test.t1` matches the filter rule                                                                                                                                                                        |
+| `RENAME TABLE ignore.t1 TO ignore.t2` | Ignore                                   | `ignore.t1` does not match the filter rule                                                                                                                                                               |
+| `RENAME TABLE test.n1 TO test.t1`     | Report an error and exit the replication | The old table name `test.n1` does not match the filter rule, but the new table name `test.t1` matches the filter rule. This operation is illegal. In this case, refer to the error message for handling. |
+| `RENAME TABLE ignore.t1 TO test.t1`   | Report an error and exit the replication | Same reason as above.                                                                                                                                                                                    |
 
-### DDL ステートメントの考慮事項 {#ddl-statement-considerations}
+#### Rename multiple tables in a DDL statement {#rename-multiple-tables-in-a-ddl-statement}
 
-アップストリームでクロスデータベース DDL ステートメント ( `CREATE TABLE db1.t1 LIKE t2`など) を実行する場合は、関連するすべてのデータベース名を DDL ステートメント ( `CREATE TABLE db1.t1 LIKE db2.t2`など) で明示的に指定することをお勧めします。そうしないと、データベース名情報が不足しているため、ダウンストリームでクロスデータベース DDL ステートメントが正しく実行されない可能性があります。
+If a DDL statement renames multiple tables, TiCDC replicates the DDL statement only when the **old database name**, **old table names**, and **new database name** all match the filter rule.
+
+In addition, TiCDC does not support the `RENAME TABLE` DDL that swaps the table names. The following is an example.
+
+Assume that the configuration file of your changefeed is as follows:
+
+```toml
+[filter]
+rules = ['test.t*']
+```
+
+TiCDC processes this type of DDL as follows:
+
+| DDL                                                                        | Whether to replicate | Reason for the handling                                                                                                                                                             |
+| -------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RENAME TABLE test.t1 TO test.t2, test.t3 TO test.t4`                      | Replicate            | All database names and table names match the filter rule.                                                                                                                           |
+| `RENAME TABLE test.t1 TO test.ignore1, test.t3 TO test.ignore2`            | Replicate            | The old database name, the old table names, and the new database name match the filter rule.                                                                                        |
+| `RENAME TABLE test.t1 TO ignore.t1, test.t2 TO test.t22;`                  | Report an error      | The new database name `ignore` does not match the filter rule.                                                                                                                      |
+| `RENAME TABLE test.t1 TO test.t4, test.t3 TO test.t1, test.t4 TO test.t3;` | Report an error      | The `RENAME TABLE` DDL swaps the names of `test.t1` and `test.t3` in one DDL statement, which TiCDC cannot handle correctly. In this case, refer to the error message for handling. |
+
+### DDL statement considerations {#ddl-statement-considerations}
+
+When executing cross-database DDL statements (such as `CREATE TABLE db1.t1 LIKE t2`) in the upstream, it is recommended that you explicitly specify all relevant database names in DDL statements (such as `CREATE TABLE db1.t1 LIKE db2.t2`). Otherwise, cross-database DDL statements might not be executed correctly in the downstream due to the lack of database name information.
+
+### Notes on using event filter rules to filter DDL events {#notes-on-using-event-filter-rules-to-filter-ddl-events}
+
+If a filtered DDL statement involves table creation or deletion, TiCDC only filters out the DDL statement without affecting the replication behavior of DML statements. The following is an example.
+
+Assume that the configuration file of your changefeed is as follows:
+
+```toml
+[filter]
+rules = ['test.t*']
+
+[[filter.event-filters]]
+matcher = ["test.t1"] # This filter rule applies only to the t1 table in the test database.
+ignore-event = ["create table", "drop table", "truncate table", "rename table"]
+```
+
+| DDL                                                    | DDL behavior | DML behavior | Explanation                                                                                                                                                           |
+| ------------------------------------------------------ | ------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CREATE TABLE test.t1 (id INT, name VARCHAR(50));`     | Ignore       | Replicate    | `test.t1` matches the event filter rule, so the `CREATE TABLE` event is ignored. The replication of DML events remains unaffected.                                    |
+| `CREATE TABLE test.t2 (id INT, name VARCHAR(50));`     | Replicate    | Replicate    | `test.t2` does not match the event filter rule.                                                                                                                       |
+| `CREATE TABLE test.ignore (id INT, name VARCHAR(50));` | Ignore       | Ignore       | `test.ignore` matches the event filter rule, so both DDL and DML events are ignored.                                                                                  |
+| `DROP TABLE test.t1;`                                  | Ignore       | <li></li>    | `test.t1` matches the event filter rule, so the `DROP TABLE` event is ignored. Because the table is deleted, TiCDC no longer replicates DML events for `t1`.          |
+| `TRUNCATE TABLE test.t1;`                              | Ignore       | Replicate    | `test.t1` matches the event filter rule, so the `TRUNCATE TABLE` event is ignored. The replication of DML events remains unaffected.                                  |
+| `RENAME TABLE test.t1 TO test.t2;`                     | Ignore       | Replicate    | `test.t1` matches the event filter rule, so the `RENAME TABLE` event is ignored. The replication of DML events remains unaffected.                                    |
+| `RENAME TABLE test.t1 TO test.ignore;`                 | Ignore       | Ignore       | `test.t1` matches the event filter rule, so the `RENAME TABLE` event is ignored. `test.ignore` matches the event filter rule, so both DDL and DML events are ignored. |
+
+> **Note:**
+>
+> -   When replicating data to a database, use the event filter to filter DDL events with caution. Ensure that the upstream and downstream database schemas remain consistent during replication. Otherwise, TiCDC might report errors or cause undefined replication behavior.
+> -   For versions earlier than v6.5.8, v7.1.4, and v7.5.1, using the event filter to filter DDL events involving table creation or deletion affects DML replication. It is not recommended to use this feature in these versions.

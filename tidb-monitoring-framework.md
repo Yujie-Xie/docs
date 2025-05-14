@@ -1,53 +1,57 @@
 ---
 title: TiDB Monitoring Framework Overview
-summary: Prometheus と Grafana を使用して、TiDB 監視フレームワークを構築します。
+summary: Use Prometheus, Grafana, and TiDB Dashboard to build the TiDB monitoring framework.
 ---
 
-# TiDB 監視フレームワークの概要 {#tidb-monitoring-framework-overview}
+# TiDB Monitoring Framework Overview {#tidb-monitoring-framework-overview}
 
-TiDB 監視フレームワークは、Prometheus と Grafana という 2 つのオープン ソース プロジェクトを採用しています。TiDB は、 [プロメテウス](https://prometheus.io)使用して監視とパフォーマンス メトリックを保存し、 [グラファナ](https://grafana.com/grafana)使用してこれらのメトリックを視覚化します。
+The TiDB monitoring framework adopts two open source projects: Prometheus and Grafana. TiDB uses [Prometheus](https://prometheus.io) to store the monitoring and performance metrics and [Grafana](https://grafana.com/grafana) to visualize these metrics. TiDB also provides a built-in [TiDB Dashboard](/dashboard/dashboard-intro.md) for monitoring and diagnosing TiDB clusters.
 
-## TiDB の Prometheus について {#about-prometheus-in-tidb}
+## About Prometheus in TiDB {#about-prometheus-in-tidb}
 
-時系列データベースである Prometheus には、多次元データ モデルと柔軟なクエリ言語があります。最も人気のあるオープン ソース プロジェクトの 1 つである Prometheus は、多くの企業や組織に採用されており、非常に活発なコミュニティがあります。PingCAP は、TiDB、TiKV、PD での監視とアラートに Prometheus を積極的に開発および採用している企業の 1 つです。
+As a time series database, Prometheus has a multi-dimensional data model and flexible query language. As one of the most popular open source projects, Prometheus has been adopted by many companies and organizations and has a very active community. PingCAP is one of the active developers and adopters of Prometheus for monitoring and alerting in TiDB, TiKV and PD.
 
-Prometheus は複数のコンポーネントで構成されています。現在、TiDB では以下のコンポーネントが使用されています。
+Prometheus consists of multiple components. Currently, TiDB uses the following of them:
 
--   時系列データをスクレイピングして保存するPrometheusサーバー
--   アプリケーションで必要なメトリックをカスタマイズするためのクライアントライブラリ
--   アラートメカニズム用のAlertmanager
+-   The Prometheus Server to scrape and store time series data
+-   The client libraries to customize necessary metrics in the application
+-   An Alertmanager for the alerting mechanism
 
-図は以下のとおりです。
+The diagram is as follows:
 
 ![diagram](/media/prometheus-in-tidb.png)
 
-## TiDB の Grafana について {#about-grafana-in-tidb}
+## About Grafana in TiDB {#about-grafana-in-tidb}
 
-Grafana は、メトリックを分析および視覚化するためのオープンソース プロジェクトです。TiDB は Grafana を使用して、次のようにパフォーマンス メトリックを表示します。
+Grafana is an open source project for analyzing and visualizing metrics. TiDB uses Grafana to display the performance metrics as follows:
 
 ![Grafana monitored\_groups](/media/grafana-monitored-groups.png)
 
--   {TiDB_Cluster_name}-Backup-Restore: バックアップと復元に関連するメトリックを監視します。
--   {TiDB_Cluster_name}- Binlog: TiDB Binlogに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Blackbox_exporter: ネットワーク プローブに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Disk-Performance: ディスク パフォーマンスに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Kafka-Overview: Kafka に関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Lightning: TiDB Lightningに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Node_exporter: オペレーティング システムに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-概要: 重要なコンポーネントに関連する監視の概要。
--   {TiDB_Cluster_name}-PD: PDサーバーに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Performance-Read: 読み取りパフォーマンスに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-Performance-Write: 書き込みパフォーマンスに関連するメトリックを監視します。
--   {TiDB_Cluster_name}-TiDB: TiDBサーバーに関連する詳細な監視メトリック。
--   {TiDB_Cluster_name}-TiDB-Summary: TiDB に関連する監視の概要。
--   {TiDB_Cluster_name}- TiFlash -Proxy-Summary: TiFlashにデータを複製するために使用されるプロキシサーバーの監視概要。
--   {TiDB_Cluster_name}- TiFlash- 概要: TiFlashに関連する監視の概要。
--   {TiDB_Cluster_name}-TiKV-Details: TiKVサーバーに関連する詳細な監視メトリック。
--   {TiDB_Cluster_name}-TiKV-Summary: TiKVサーバーに関連する監視の概要。
--   {TiDB_Cluster_name}-TiKV-Trouble-Shooting: TiKV エラー診断に関連するメトリックを監視します。
--   {TiDB_Cluster_name}-TiCDC: TiCDC に関連する詳細な監視メトリック。
--   {TiDB_Cluster_name}-TiProxy-Summary: TiProxy に関連する監視の概要。
+-   {TiDB_Cluster_name}-Backup-Restore: Monitoring metrics related to backup and restore.
+-   {TiDB_Cluster_name}-Binlog: Monitoring metrics related to TiDB Binlog.
+-   {TiDB_Cluster_name}-Blackbox_exporter: Monitoring metrics related to network probe.
+-   {TiDB_Cluster_name}-Disk-Performance: Monitoring metrics related to disk performance.
+-   {TiDB_Cluster_name}-Kafka-Overview: Monitoring metrics related to Kafka.
+-   {TiDB_Cluster_name}-Lightning: Monitoring metrics related to TiDB Lightning.
+-   {TiDB_Cluster_name}-Node_exporter: Monitoring metrics related to the operating system.
+-   {TiDB_Cluster_name}-Overview: Monitoring overview related to important components.
+-   {TiDB_Cluster_name}-PD: Monitoring metrics related to the PD server.
+-   {TiDB_Cluster_name}-Performance-Read: Monitoring metrics related to read performance.
+-   {TiDB_Cluster_name}-Performance-Write: Monitoring metrics related to write performance.
+-   {TiDB_Cluster_name}-TiDB: Detailed monitoring metrics related to the TiDB server.
+-   {TiDB_Cluster_name}-TiDB-Summary: Monitoring overview related to TiDB.
+-   {TiDB_Cluster_name}-TiFlash-Proxy-Summary: Monitoring overview of the proxy server that is used to replicate data to TiFlash.
+-   {TiDB_Cluster_name}-TiFlash-Summary: Monitoring overview related to TiFlash.
+-   {TiDB_Cluster_name}-TiKV-Details: Detailed monitoring metrics related to the TiKV server.
+-   {TiDB_Cluster_name}-TiKV-Summary: Monitoring overview related to the TiKV server.
+-   {TiDB_Cluster_name}-TiKV-Trouble-Shooting: Monitoring metrics related to the TiKV error diagnostics.
+-   {TiDB_Cluster_name}-TiCDC: Detailed monitoring metrics related to TiCDC.
+-   {TiDB_Cluster_name}-TiProxy-Summary: Monitoring overview related to TiProxy.
 
-各グループには監視メトリックの複数のパネル ラベルがあり、各パネルには複数の監視メトリックの詳細情報が含まれています。たとえば、**概要**監視グループには 5 つのパネル ラベルがあり、各ラベルは監視パネルに対応しています。次の UI を参照してください。
+Each group has multiple panel labels of monitoring metrics, and each panel contains detailed information of multiple monitoring metrics. For example, the **Overview** monitoring group has five panel labels, and each labels corresponds to a monitoring panel. See the following UI:
 
 ![Grafana Overview](/media/grafana-monitor-overview.png)
+
+## TiDB Dashboard {#tidb-dashboard}
+
+TiDB Dashboard is a web UI for monitoring, diagnosing, and managing the TiDB cluster, which is introduced in v4.0. It is built into the PD component and does not require an independent deployment. For more information, see [TiDB Dashboard introduction](/dashboard/dashboard-intro.md).

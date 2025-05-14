@@ -1,17 +1,17 @@
 ---
 title: TiDB Lightning Configuration
-summary: TiDB Lightningの CLI の使用方法とサンプル構成について学習します。
+summary: Learn about the CLI usage and sample configuration in TiDB Lightning.
 ---
 
-# TiDB Lightningコンフィグレーション {#tidb-lightning-configuration}
+# TiDB Lightning Configuration {#tidb-lightning-configuration}
 
-このドキュメントでは、グローバル構成とタスク構成のサンプルを提供し、コマンドライン パラメータの使用方法について説明します。
+This document provides samples for global configuration and task configuration, and describes the usage of command-line parameters.
 
-## コンフィグレーションファイル {#configuration-files}
+## Configuration files {#configuration-files}
 
-TiDB Lightning には、 「グローバル」と「タスク」の 2 つの構成クラスがあり、それらの構造は互換性があります。これらの違いは、 [サーバーモード](/tidb-lightning/tidb-lightning-web-interface.md)が有効になっている場合にのみ生じます。サーバーモードが無効になっている場合 (デフォルト)、 TiDB Lightning は1 つのタスクのみを実行し、グローバル構成とタスク構成の両方に同じ構成ファイルが使用されます。
+TiDB Lightning has two configuration classes: "global" and "task", and they have compatible structures. Their distinction arises only when the [server mode](/tidb-lightning/tidb-lightning-web-interface.md) is enabled. When server mode is disabled (the default), TiDB Lightning will only execute one task, and the same configuration file is used for both global and task configurations.
 
-### TiDB Lightning(グローバル) {#tidb-lightning-global}
+### TiDB Lightning (Global) {#tidb-lightning-global}
 
 ```toml
 ### tidb-lightning global configuration
@@ -40,7 +40,7 @@ max-backups = 14
 enable-diagnose-logs = false
 ```
 
-### TiDB Lightning (タスク) {#tidb-lightning-task}
+### TiDB Lightning (Task) {#tidb-lightning-task}
 
 ```toml
 ### tidb-lightning task configuration
@@ -399,10 +399,6 @@ distsql-scan-concurrency = 15
 index-serial-scan-concurrency = 20
 checksum-table-concurrency = 2
 
-# Sets other TiDB session variables
-# [tidb.session-vars]
-# tidb_enable_clustered_index = "OFF"
-
 # The default SQL mode used to parse and execute the SQL statements.
 sql-mode = "ONLY_FULL_GROUP_BY,NO_AUTO_CREATE_USER"
 # Sets maximum packet size allowed for SQL connections.
@@ -426,6 +422,10 @@ max-allowed-packet = 67_108_864
 # cert-path = "/path/to/lightning.pem"
 # Private key of this service. Default to copy of `security.key-path`
 # key-path = "/path/to/lightning.key"
+
+# Sets other TiDB session variables
+# [tidb.session-vars]
+# tidb_enable_clustered_index = "OFF"
 
 # In the physical import mode, when data importing is complete, TiDB Lightning can
 # automatically perform the Checksum and Analyze operations. It is recommended
