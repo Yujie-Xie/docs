@@ -1,151 +1,153 @@
 ---
 title: Connect to a TiDB Cloud Dedicated Cluster via Google Cloud Private Service Connect
-summary: Google Cloud Private Service Connect を介してTiDB Cloudクラスタに接続する方法を学習します。
+summary: Learn how to connect to your TiDB Cloud cluster via Google Cloud Private Service Connect.
 ---
 
-# Google Cloud Private Service Connect 経由でTiDB Cloud専用クラスタに接続する {#connect-to-a-tidb-cloud-dedicated-cluster-via-google-cloud-private-service-connect}
+# Connect to a TiDB Cloud Dedicated Cluster via Google Cloud Private Service Connect {#connect-to-a-tidb-cloud-dedicated-cluster-via-google-cloud-private-service-connect}
 
-このドキュメントでは、Google Cloud Private Service Connect を介してTiDB Cloud Dedicated クラスタに接続する方法について説明します。Google Cloud Private Service Connect は、Google Cloud が提供するプライベート エンドポイント サービスです。
+This document describes how to connect to your TiDB Cloud Dedicated cluster via Google Cloud Private Service Connect. Google Cloud Private Service Connect is a private endpoint service provided by Google Cloud.
 
-> **ヒント：**
+> **Tip:**
 >
-> -   AWS のプライベートエンドポイント経由でTiDB Cloud Dedicated クラスターに接続する方法については、 [AWS のプライベートエンドポイント経由でTiDB Cloud Dedicated に接続する](/tidb-cloud/set-up-private-endpoint-connections.md)参照してください。
-> -   プライベート エンドポイント経由でTiDB Cloud Serverless クラスターに接続する方法については、 [プライベートエンドポイント経由でTiDB Cloud Serverless に接続する](/tidb-cloud/set-up-private-endpoint-connections-serverless.md)参照してください。
+> -   To learn how to connect to a TiDB Cloud Dedicated cluster via private endpoint with AWS, see [Connect to TiDB Cloud Dedicated via Private Endpoint with AWS](/tidb-cloud/set-up-private-endpoint-connections.md).
+> -   To learn how to connect to a TiDB Cloud Serverless cluster via private endpoint, see [Connect to TiDB Cloud Serverless via Private Endpoint](/tidb-cloud/set-up-private-endpoint-connections-serverless.md).
 
-TiDB Cloud は、 [プライベートサービス接続](https://cloud.google.com/vpc/docs/private-service-connect)を介して Google Cloud VPC でホストされているTiDB Cloudサービスへの非常に安全な一方向アクセスをサポートしています。エンドポイントを作成し、それを使用してTiDB Cloudサービスに接続できます。
+TiDB Cloud supports highly secure and one-way access to the TiDB Cloud service hosted in a Google Cloud VPC via the [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect). You can create an endpoint and use it to connect to the TiDB Cloud service .
 
-Google Cloud Private Service Connect を利用することで、エンドポイント接続は安全かつプライベートになり、データがパブリック インターネットに公開されることはありません。さらに、エンドポイント接続は CIDR オーバーラップをサポートし、ネットワーク管理が容易になります。
+Powered by Google Cloud Private Service Connect, the endpoint connection is secure and private, and does not expose your data to the public internet. In addition, the endpoint connection supports CIDR overlap and is easier for network management.
 
-プライベート エンドポイントのアーキテクチャは次のとおりです。
+The architecture of Google Cloud Private Service Connect is as follows: [^1]
 
 ![Private Service Connect architecture](/media/tidb-cloud/google-cloud-psc-endpoint-overview.png)
 
-プライベート エンドポイントとエンドポイント サービスの詳細な定義については、次の Google Cloud ドキュメントをご覧ください。
+For more detailed definitions of the private endpoint and endpoint service, see the following Google Cloud documents:
 
--   [プライベートサービス接続](https://cloud.google.com/vpc/docs/private-service-connect)
--   [エンドポイントを通じて公開されたサービスにアクセスする](https://cloud.google.com/vpc/docs/configure-private-service-connect-services)
+-   [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect)
+-   [Access published services through endpoints](https://cloud.google.com/vpc/docs/configure-private-service-connect-services)
 
-## 制限 {#restrictions}
+## Restrictions {#restrictions}
 
--   この機能は、2023 年 4 月 13 日以降に作成されたTiDB Cloud Dedicated クラスターに適用されます。古いクラスターについては、 [TiDB Cloudサポート](/tidb-cloud/tidb-cloud-support.md)お問い合わせください。
--   Google Cloud Private Service Connect エンドポイントを作成できるのは、ロール`Organization Owner`と`Project Owner`のみです。
--   各 TiDB クラスターは、最大 10 個のエンドポイントからの接続を処理できます。
--   各 Google Cloud プロジェクトには、TiDBクラスタに接続するエンドポイントを最大 10 個まで含めることができます。
--   エンドポイント サービスが構成されたプロジェクトでは、Google Cloud でホストされるTiDB Cloud Dedicated クラスタを最大 8 個作成できます。
--   プライベート エンドポイントと接続する TiDB クラスターは同じリージョンに配置されている必要があります。
--   出力ファイアウォール ルールは、エンドポイントの内部 IP アドレスへのトラフィックを許可する必要があります。1 [暗黙の出口許可ファイアウォールルール](https://cloud.google.com/firewall/docs/firewalls#default_firewall_rules)任意の宛先 IP アドレスへの出力を許可します。
--   VPC ネットワークで出力拒否ファイアウォール ルールを作成した場合、または暗黙的に許可された出力動作を変更する階層型ファイアウォール ポリシーを作成した場合、エンドポイントへのアクセスが影響を受ける可能性があります。この場合、エンドポイントの内部宛先 IP アドレスへのトラフィックを許可する特定の出力許可ファイアウォール ルールまたはポリシーを作成する必要があります。
+-   This feature is applicable to TiDB Cloud Dedicated clusters created after April 13, 2023. For older clusters, contact [TiDB Cloud Support](/tidb-cloud/tidb-cloud-support.md) for assistance.
+-   Only the `Organization Owner` and `Project Owner` roles can create Google Cloud Private Service Connect endpoints.
+-   Each TiDB cluster can handle connections from up to 10 endpoints.
+-   Each Google Cloud project can have up to 10 endpoints connecting to a TiDB Cluster.
+-   You can create up to 8 TiDB Cloud Dedicated clusters hosted on Google Cloud in a project with the endpoint service configured.
+-   The private endpoint and the TiDB cluster to be connected must be located in the same region.
+-   Egress firewall rules must permit traffic to the internal IP address of the endpoint. The [implied allow egress firewall rule](https://cloud.google.com/firewall/docs/firewalls#default_firewall_rules) permits egress to any destination IP address.
+-   If you have created egress deny firewall rules in your VPC network, or if you have created hierarchical firewall policies that modify the implied allowed egress behavior, access to the endpoint might be affected. In this case, you need to create a specific egress allow firewall rule or policy to permit traffic to the internal destination IP address of the endpoint.
 
-ほとんどのシナリオでは、VPC ピアリング経由のプライベート エンドポイント接続を使用することをお勧めします。ただし、次のシナリオでは、プライベート エンドポイント接続ではなく VPC ピアリングを使用する必要があります。
+In most scenarios, it is recommended that you use private endpoint connection over VPC peering. However, in the following scenarios, you should use VPC peering instead of private endpoint connection:
 
--   高可用性を実現するために、 [ティCDC](https://docs.pingcap.com/tidb/stable/ticdc-overview)クラスターを使用して、ソース TiDB クラスターからリージョンをまたがるターゲット TiDB クラスターにデータをレプリケートしています。現在、プライベート エンドポイントはリージョン間の接続をサポートしていません。
--   TiCDC クラスターを使用してダウンストリーム クラスター (Amazon Aurora、MySQL、Kafka など) にデータを複製していますが、ダウンストリームのエンドポイント サービスを独自に維持することはできません。
+-   You are using a [TiCDC](https://docs.pingcap.com/tidb/stable/ticdc-overview) cluster to replicate data from a source TiDB cluster to a target TiDB cluster across regions, to get high availability. Currently, private endpoint does not support cross-region connection.
+-   You are using a TiCDC cluster to replicate data to a downstream cluster (such as Amazon Aurora, MySQL, and Kafka) but you cannot maintain the endpoint service of the downstream on your own.
 
-## Google Cloud Private Service Connect を使用してプライベート エンドポイントを設定する {#set-up-a-private-endpoint-with-google-cloud-private-service-connect}
+## Set up a private endpoint with Google Cloud Private Service Connect {#set-up-a-private-endpoint-with-google-cloud-private-service-connect}
 
-プライベート エンドポイント経由でTiDB Cloud Dedicated クラスターに接続するには、 [前提条件](#prerequisites)を完了し、次の手順に従います。
+To connect to your TiDB Cloud Dedicated cluster via a private endpoint, complete the [prerequisites](#prerequisites) and follow these steps:
 
-1.  [TiDBクラスタを選択](#step-1-select-a-tidb-cluster)
-2.  [Google Cloud プライベート エンドポイントを作成する](#step-2-create-a-google-cloud-private-endpoint)
-3.  [エンドポイントアクセスを許可する](#step-3-accept-endpoint-access)
-4.  [TiDBクラスターに接続する](#step-4-connect-to-your-tidb-cluster)
+1.  [Select a TiDB cluster](#step-1-select-a-tidb-cluster)
+2.  [Create a Google Cloud private endpoint](#step-2-create-a-google-cloud-private-endpoint)
+3.  [Accept endpoint access](#step-3-accept-endpoint-access)
+4.  [Connect to your TiDB cluster](#step-4-connect-to-your-tidb-cluster)
 
-複数のクラスタがある場合は、Google Cloud Private Service Connect を使用して接続するクラスタごとにこれらの手順を繰り返す必要があります。
+If you have multiple clusters, you need to repeat these steps for each cluster that you want to connect to using Google Cloud Private Service Connect.
 
-### 前提条件 {#prerequisites}
+### Prerequisites {#prerequisites}
 
-エンドポイントの作成を開始する前に:
+Before you begin to create an endpoint:
 
--   Google Cloud プロジェクトで次の API を[有効にする](https://console.cloud.google.com/apis/library/compute.googleapis.com) 。
-    -   [コンピューティング エンジン API](https://cloud.google.com/compute/docs/reference/rest/v1)
-    -   [サービスディレクトリAPI](https://cloud.google.com/service-directory/docs/reference/rest)
-    -   [クラウドDNSAPI](https://cloud.google.com/dns/docs/reference/v1)
+-   [Enable](https://console.cloud.google.com/apis/library/compute.googleapis.com) the following APIs in your Google Cloud project:
+    -   [Compute Engine API](https://cloud.google.com/compute/docs/reference/rest/v1)
+    -   [Service Directory API](https://cloud.google.com/service-directory/docs/reference/rest)
+    -   [Cloud DNS API](https://cloud.google.com/dns/docs/reference/v1)
 
--   エンドポイントを作成するために必要な権限を持つ次の[IAMロール](https://cloud.google.com/iam/docs/understanding-roles)を準備します。
+-   Prepare the following [IAM roles](https://cloud.google.com/iam/docs/understanding-roles) with the permissions needed to create an endpoint.
 
-    -   タスク:
-        -   エンドポイントを作成する
-        -   エンドポイントの[DNSエントリ](https://cloud.google.com/vpc/docs/configure-private-service-connect-services#dns-endpoint)自動または手動で構成する
-    -   必要なIAMロール:
-        -   [コンピューティングネットワーク管理者](https://cloud.google.com/iam/docs/understanding-roles#compute.networkAdmin) (ロール/compute.networkAdmin)
-        -   [サービスディレクトリエディタ](https://cloud.google.com/iam/docs/understanding-roles#servicedirectory.editor) (ロール/サービスディレクトリ.エディター)
+    -   Tasks:
+        -   Create an endpoint
+        -   Automatically or manually configure [DNS entries](https://cloud.google.com/vpc/docs/configure-private-service-connect-services#dns-endpoint) for an endpoint
+    -   Required IAM roles:
+        -   [Compute Network Admin](https://cloud.google.com/iam/docs/understanding-roles#compute.networkAdmin) (roles/compute.networkAdmin)
+        -   [Service Directory Editor](https://cloud.google.com/iam/docs/understanding-roles#servicedirectory.editor) (roles/servicedirectory.editor)
 
-### ステップ1. TiDBクラスターを選択する {#step-1-select-a-tidb-cluster}
+### Step 1. Select a TiDB cluster {#step-1-select-a-tidb-cluster}
 
-1.  [**クラスター**](https://tidbcloud.com/console/clusters)ページで、ターゲット TiDB クラスターの名前をクリックして、概要ページに移動します。次のいずれかのステータスのクラスターを選択できます。
+1.  On the [**Clusters**](https://tidbcloud.com/console/clusters) page, click the name of your target TiDB cluster to go to its overview page. You can select a cluster with any of the following statuses:
 
-    -   **利用可能**
-    -   **復元**
-    -   **変更中**
-    -   **インポート**
+    -   **Available**
+    -   **Restoring**
+    -   **Modifying**
+    -   **Importing**
 
-2.  右上隅の**「接続」**をクリックします。接続ダイアログが表示されます。
+2.  Click **Connect** in the upper-right corner. A connection dialog is displayed.
 
-3.  [**接続タイプ]**ドロップダウン リストで**[プライベート エンドポイント]**を選択し、 **[プライベート エンドポイント接続の作成]**をクリックします。
+3.  In the **Connection Type** drop-down list, select **Private Endpoint**, and then click **Create Private Endpoint Connection**.
 
-    > **注記：**
+    > **Note:**
     >
-    > プライベート エンドポイント接続を既に作成している場合は、アクティブなエンドポイントが接続ダイアログに表示されます。追加のプライベート エンドポイント接続を作成するには、左側のナビゲーション ペインの**[ネットワーク]**ページに移動します。
+    > If you have already created a private endpoint connection, the active endpoint will appear in the connection dialog. To create additional private endpoint connections, navigate to the **Networking** page in the left navigation pane.
 
-### ステップ 2. Google Cloud プライベート エンドポイントを作成する {#step-2-create-a-google-cloud-private-endpoint}
+### Step 2. Create a Google Cloud private endpoint {#step-2-create-a-google-cloud-private-endpoint}
 
-1.  プライベート エンドポイント作成コマンドを生成するには、次の情報を指定します。
-    -   **Google Cloud プロジェクト ID** : Google Cloud アカウントに関連付けられたプロジェクト ID。ID は[Google Cloud**ダッシュボード**ページ](https://console.cloud.google.com/home/dashboard)にあります。
-    -   **Google Cloud VPC 名**: 指定したプロジェクト内の VPC の名前。2 で確認できます[Google Cloud **VPC ネットワーク**ページ](https://console.cloud.google.com/networking/networks/list)
-    -   **Google Cloud サブネット名**: 指定された VPC 内のサブネットの名前。VPC**ネットワークの詳細**ページで確認できます。
-    -   **プライベート サービス接続エンドポイント名**: 作成するプライベート エンドポイントの一意の名前を入力します。
-2.  情報を入力したら、 **「コマンドの生成」**をクリックします。
-3.  生成されたコマンドをコピーします。
-4.  [Google クラウド シェル](https://console.cloud.google.com/home/dashboard)を開き、コマンドを実行してプライベート エンドポイントを作成します。
+1.  Provide the following information to generate the command for private endpoint creation:
+    -   **Google Cloud Project ID**: the Project ID associated with your Google Cloud account. You can find the ID on the [Google Cloud **Dashboard** page](https://console.cloud.google.com/home/dashboard).
+    -   **Google Cloud VPC Name**: the name of the VPC in your specified project. You can find it on the [Google Cloud **VPC networks** page](https://console.cloud.google.com/networking/networks/list).
+    -   **Google Cloud Subnet Name**: the name of the subnet in the specified VPC. You can find it on the **VPC network details** page.
+    -   **Private Service Connect Endpoint Name**: enter a unique name for the private endpoint that will be created.
+2.  After entering the information, click **Generate Command**.
+3.  Copy the generated command.
+4.  Open [Google Cloud Shell](https://console.cloud.google.com/home/dashboard) and execute the command to create the private endpoint.
 
-### ステップ3. エンドポイントアクセスを許可する {#step-3-accept-endpoint-access}
+### Step 3. Accept endpoint access {#step-3-accept-endpoint-access}
 
-Google Cloud Shell でコマンドを正常に実行したら、 TiDB Cloudコンソールに戻り、 **「エンドポイント アクセスを承認」**をクリックします。
+After executing the command in Google Cloud Shell successfully, go back to the TiDB Cloud console and then click **Accept Endpoint Access**.
 
-エラー`not received connection request from endpoint`が表示された場合は、コマンドを正しくコピーし、Google Cloud Shell で正常に実行したことを確認してください。
+If you see an error `not received connection request from endpoint`, make sure that you have copied the command correctly and successfully executed it in your Google Cloud Shell.
 
-### ステップ4. TiDBクラスターに接続する {#step-4-connect-to-your-tidb-cluster}
+### Step 4. Connect to your TiDB cluster {#step-4-connect-to-your-tidb-cluster}
 
-プライベート エンドポイント接続を承認すると、接続ダイアログにリダイレクトされます。
+After you have accepted the private endpoint connection, you are redirected back to the connection dialog.
 
-1.  プライベート エンドポイントの接続ステータスが**「システム チェック中」**から**「アクティブ」**に変わるまで待ちます (約 5 分)。
-2.  **[接続方法]**ドロップダウン リストで、希望する接続方法を選択します。対応する接続文字列がダイアログの下部に表示されます。
-3.  接続文字列を使用してクラスターに接続します。
+1.  Wait for the private endpoint connection status to change from **System Checking** to **Active** (approximately 5 minutes).
+2.  In the **Connect With** drop-down list, select your preferred connection method. The corresponding connection string is displayed at the bottom of the dialog.
+3.  Connect to your cluster with the connection string.
 
-### プライベートエンドポイントステータスリファレンス {#private-endpoint-status-reference}
+### Private endpoint status reference {#private-endpoint-status-reference}
 
-プライベート エンドポイント接続を使用すると、プライベート エンドポイントまたはプライベート エンドポイント サービスのステータスが[**プライベートエンドポイント**ページ](#prerequisites)に表示されます。
+When you use private endpoint connections, the statuses of private endpoints or private endpoint services are displayed on the [**Private Endpoint** page](#prerequisites).
 
-プライベート エンドポイントの可能なステータスは次のように説明されます。
+The possible statuses of a private endpoint are explained as follows:
 
--   **保留中**: 処理を待機しています。
--   **アクティブ**: プライベート エンドポイントは使用できる状態です。このステータスのプライベート エンドポイントは編集できません。
--   **削除中**: プライベート エンドポイントを削除しています。
--   **失敗**: プライベート エンドポイントの作成に失敗しました。その行の**[編集] を**クリックすると、作成を再試行できます。
+-   **Pending**: waiting for processing.
+-   **Active**: your private endpoint is ready to use. You cannot edit the private endpoint of this status.
+-   **Deleting**: the private endpoint is being deleted.
+-   **Failed**: the private endpoint creation fails. You can click **Edit** of that row to retry the creation.
 
-プライベート エンドポイント サービスの可能なステータスは、次のように説明されます。
+The possible statuses of a private endpoint service are explained as follows:
 
--   **作成中**: エンドポイント サービスを作成中です。これには 3 ～ 5 分かかります。
--   **アクティブ**: プライベート エンドポイントが作成されたかどうかに関係なく、エンドポイント サービスが作成されます。
+-   **Creating**: the endpoint service is being created, which takes 3 to 5 minutes.
+-   **Active**: the endpoint service is created, no matter whether the private endpoint is created or not.
 
-## トラブルシューティング {#troubleshooting}
+## Troubleshooting {#troubleshooting}
 
-### TiDB Cloud がエンドポイント サービスの作成に失敗しました。どうすればいいですか? {#tidb-cloud-fails-to-create-an-endpoint-service-what-should-i-do}
+### TiDB Cloud fails to create an endpoint service. What should I do? {#tidb-cloud-fails-to-create-an-endpoint-service-what-should-i-do}
 
-「 **Google Cloud プライベート エンドポイント接続の作成」**ページを開いて TiDB クラスタを選択すると、エンドポイント サービスが自動的に作成されます。失敗と表示されたり、長時間**「作成中**」状態のままになったりする場合は、 [サポートチケット](/tidb-cloud/tidb-cloud-support.md)を送信してサポートを受けてください。
+The endpoint service is created automatically after you open the **Create Google Cloud Private Endpoint Connection** page and choose the TiDB cluster. If it shows as failed or remains in the **Creating** state for a long time, submit a [support ticket](/tidb-cloud/tidb-cloud-support.md) for assistance.
 
-### Google Cloud でエンドポイントを作成できません。どうすればいいですか? {#fail-to-create-an-endpoint-in-google-cloud-what-should-i-do}
+### Fail to create an endpoint in Google Cloud. What should I do? {#fail-to-create-an-endpoint-in-google-cloud-what-should-i-do}
 
-この問題を解決するには、プライベート エンドポイント作成コマンドを実行した後に Google Cloud Shell から返されるエラー メッセージを確認する必要があります。権限関連のエラーの場合は、再試行する前に必要な権限を付与する必要があります。
+To troubleshoot the issue, you need to review the error message returned by Google Cloud Shell after you execute the private endpoint creation command. If it is a permission-related error, you must grant the necessary permissions before retrying.
 
-### いくつかのアクションをキャンセルしました。エンドポイント アクセスを受け入れる前にキャンセルを処理するにはどうすればよいでしょうか? {#i-cancelled-some-actions-what-should-i-do-to-handle-cancellation-before-accepting-endpoint-access}
+### I cancelled some actions. What should I do to handle cancellation before accepting endpoint access? {#i-cancelled-some-actions-what-should-i-do-to-handle-cancellation-before-accepting-endpoint-access}
 
-キャンセルされたアクションの未保存の下書きは保持も表示もされません。次回TiDB Cloudコンソールで新しいプライベート エンドポイントを作成するときは、各手順を繰り返す必要があります。
+Unsaved drafts of cancelled actions will not be retained or displayed. You need to repeat each step when creating a new private endpoint in the TiDB Cloud console next time.
 
-Google Cloud Shell でプライベート エンドポイントを作成するコマンドをすでに実行している場合は、Google Cloud コンソールで手動で[対応するエンドポイントを削除する](https://cloud.google.com/vpc/docs/configure-private-service-connect-services#delete-endpoint)実行する必要があります。
+If you have already executed the command to create a private endpoint in Google Cloud Shell, you need to manually [delete the corresponding endpoint](https://cloud.google.com/vpc/docs/configure-private-service-connect-services#delete-endpoint) in the Google Cloud console.
 
-### サービス アタッチメントを直接コピーして生成されたエンドポイントがTiDB Cloudコンソールに表示されないのはなぜですか? {#why-can-t-i-see-the-endpoints-generated-by-directly-copying-the-service-attachment-in-the-tidb-cloud-console}
+### Why can't I see the endpoints generated by directly copying the service attachment in the TiDB Cloud console? {#why-can-t-i-see-the-endpoints-generated-by-directly-copying-the-service-attachment-in-the-tidb-cloud-console}
 
-TiDB Cloudコンソールでは、 **「Google Cloud プライベート エンドポイント接続の作成」**ページで生成されたコマンドを通じて作成されたエンドポイントのみを表示できます。
+In the TiDB Cloud console, you can only view endpoints that are created through the command generated on the **Create Google Cloud Private Endpoint Connection** page.
 
-ただし、サービス アタッチメントを直接コピーして生成されたエンドポイント (つまり、 TiDB Cloudコンソールで生成されたコマンドによって作成されていないエンドポイント) は、 TiDB Cloudコンソールに表示されません。
+However, endpoints generated by directly copying the service attachment (that is, not created through the command generated in the TiDB Cloud console) are not displayed in the TiDB Cloud console.
+
+[^1]: The diagram of the Google Cloud Private Service Connect architecture is from the [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect) document in Google Cloud documentation, licensed under the Creative Commons Attribution 4.0 International.
