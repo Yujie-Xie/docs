@@ -725,9 +725,13 @@ Configuration items related to opentracing.reporter.
 
 ### <code>grpc-compression-type</code> {#code-grpc-compression-type-code}
 
--   Specifies the compression type used for data transfer between TiDB and TiKV nodes. The default value is `"none"`, which means no compression. To enable the gzip compression, set this value to `"gzip"`.
+-   Specifies the compression type used for data transfer from TiDB nodes to TiKV nodes. The default value is `"none"`, which means no compression. To enable the gzip compression, set this value to `"gzip"`.
 -   Default value: `"none"`
 -   Value options: `"none"`, `"gzip"`
+
+> **Note:**
+>
+> The compression algorithm for response messages returned from TiKV nodes to TiDB nodes is controlled by the TiKV configuration item [`grpc-compression-type`](/tikv-configuration-file.md#grpc-compression-type).
 
 ### <code>commit-timeout</code> {#code-commit-timeout-code}
 
