@@ -1,40 +1,40 @@
 ---
 title: Use Import Resource
-summary: インポート リソースを使用してインポート タスクを管理する方法を学習します。
+summary: Learn how to manage the import task using the import resource.
 ---
 
-# インポートリソースの使用 {#use-import-resource}
+# Use Import Resource {#use-import-resource}
 
-このドキュメントの`tidbcloud_import`リソースを使用して、 TiDB Cloudクラスターにデータをインポートする方法を学習できます。
+You can learn how to import data to a TiDB Cloud cluster with the `tidbcloud_import` resource in this document.
 
-`tidbcloud_import`リソースの機能は次のとおりです。
+The features of the `tidbcloud_import` resource include the following:
 
--   TiDB Cloud Serverless およびTiDB Cloud Dedicated クラスターのインポート タスクを作成します。
--   ローカルディスクまたは Amazon S3 バケットからデータをインポートします。
--   進行中のインポート タスクをキャンセルします。
+-   Create import tasks for TiDB Cloud Serverless and TiDB Cloud Dedicated clusters.
+-   Import data either from local disks or from Amazon S3 buckets.
+-   Cancel ongoing import tasks.
 
-## 前提条件 {#prerequisites}
+## Prerequisites {#prerequisites}
 
--   [TiDB Cloud Terraform プロバイダーを入手](/tidb-cloud/terraform-get-tidbcloud-provider.md) 。
--   [TiDB Cloud Serverless クラスターを作成する](/tidb-cloud/create-tidb-cluster-serverless.md)または[TiDB Cloud専用クラスターを作成する](/tidb-cloud/create-tidb-cluster.md) 。
+-   [Get TiDB Cloud Terraform Provider](/tidb-cloud/terraform-get-tidbcloud-provider.md).
+-   [Create a TiDB Cloud Serverless cluster](/tidb-cloud/create-tidb-cluster-serverless.md) or [Create a TiDB Cloud Dedicated cluster](/tidb-cloud/create-tidb-cluster.md).
 
-## インポートタスクを作成して実行する {#create-and-run-an-import-task}
+## Create and run an import task {#create-and-run-an-import-task}
 
-インポート リソースを使用して、ローカル インポート タスクまたは Amazon S3 インポート タスクのいずれかを管理できます。
+You can manage either a local import task or an Amazon S3 import task using the import resource.
 
-### ローカルインポートタスクを作成して実行する {#create-and-run-a-local-import-task}
+### Create and run a local import task {#create-and-run-a-local-import-task}
 
-> **注記：**
+> **Note:**
 >
-> ローカル ファイルのインポートは、 TiDB Cloud Serverless クラスターでのみサポートされ、 TiDB Cloud Dedicated クラスターではサポートされません。
+> Importing local files is supported only for TiDB Cloud Serverless clusters, not for TiDB Cloud Dedicated clusters.
 
-1.  インポート用の CSV ファイルを作成します。例:
+1.  Create a CSV file for import. For example:
 
         id;name;age
         1;Alice;20
         2;Bob;30
 
-2.  `import`ディレクトリを作成し、その中に`main.tf`を作成します。例:
+2.  Create an `import` directory, and then create a `main.tf` inside it. For example:
 
         terraform {
          required_providers {
@@ -64,9 +64,9 @@ summary: インポート リソースを使用してインポート タスクを
           file_name = "your_csv_path"
         }
 
-    ファイル内のリソース値 (プロジェクト ID、クラスター ID、CSV パスなど) を独自のものに置き換えます。 `csv_format`の詳細は[設定ページ](https://registry.terraform.io/providers/tidbcloud/tidbcloud/latest/docs/resources/import#nested-schema-for-csv_format)に記載されています。
+    Replace resource values (such as project ID, cluster ID, and CSV path) in the file with your own. And you can find details of `csv_format` on the [configuration page](https://registry.terraform.io/providers/tidbcloud/tidbcloud/latest/docs/resources/import#nested-schema-for-csv_format).
 
-3.  `terraform apply`コマンドを実行してインポート タスクを作成し、 `yes`と入力して作成を確認し、インポートを開始します。
+3.  Run the `terraform apply` command to create an import task, and then type `yes` to confirm the creation and start the import:
 
         $ terraform apply
         ...
@@ -81,7 +81,7 @@ summary: インポート リソースを使用してインポート タスクを
         tidbcloud_import.example_local: Creating...
         tidbcloud_import.example_local: Creation complete after 6s [id=781074]
 
-4.  `terraform state show tidbcloud_import.${resource-name}`使用してインポート タスクのステータスを確認します。
+4.  Use `terraform state show tidbcloud_import.${resource-name}` to check the status of the import task:
 
         $ terraform state show tidbcloud_import.example_local
         # tidbcloud_import.example_local:
@@ -120,7 +120,7 @@ summary: インポート リソースを使用してインポート タスクを
             type                          = "LOCAL"
         }
 
-5.  数分後にステータスを更新するには`terraform refresh`使用します。
+5.  Use `terraform refresh` to update the status after several minutes:
 
         $ terraform refresh && terraform state show tidbcloud_import.example_local
         tidbcloud_import.example_local: Refreshing state... [id=781074]
@@ -160,9 +160,9 @@ summary: インポート リソースを使用してインポート タスクを
             type                          = "LOCAL"
         }
 
-    ステータスが`COMPLETED`に変わると、インポート タスクが完了したことを示します。
+    When the status turns to `COMPLETED`, it indicates that the import task is finished.
 
-6.  MySQL CLI でインポートされたデータを確認します。
+6.  Check the imported data with MySQL CLI:
 
         mysql> SELECT * FROM test.import_test;
         +------+-------+------+
@@ -173,13 +173,13 @@ summary: インポート リソースを使用してインポート タスクを
         +------+-------+------+
         2 rows in set (0.24 sec)
 
-### Amazon S3 インポートタスクを作成して実行する {#create-and-run-an-amazon-s3-import-task}
+### Create and run an Amazon S3 import task {#create-and-run-an-amazon-s3-import-task}
 
-> **注記：**
+> **Note:**
 >
-> TiDB Cloud がAmazon S3 バケット内のファイルにアクセスできるようにするには、まず[Amazon S3 アクセスを構成する](/tidb-cloud/config-s3-and-gcs-access.md#configure-amazon-s3-access)実行する必要があります。
+> To allow TiDB Cloud to access your files in the Amazon S3 bucket, you need to [configure Amazon S3 access](/tidb-cloud/dedicated-external-storage.md#configure-amazon-s3-access) first.
 
-1.  `import`ディレクトリを作成し、その中に`main.tf`を作成します。例:
+1.  Create an `import` directory, and then create a `main.tf` inside it. For example:
 
         terraform {
           required_providers {
@@ -212,7 +212,7 @@ summary: インポート リソースを使用してインポート タスクを
           source_url   = "your_url"
         }
 
-2.  `terraform apply`コマンドを実行してインポート タスクを作成し、 `yes`と入力して作成を確認し、インポートを開始します。
+2.  Run the `terraform apply` command to create an import task, and then type `yes` to confirm the creation and start the import:
 
         $ terraform apply
         ...
@@ -229,17 +229,17 @@ summary: インポート リソースを使用してインポート タスクを
         tidbcloud_import.example_s3_parquet: Creating...
         tidbcloud_import.example_s3_parquet: Creation complete after 4s [id=781076]
 
-3.  `terraform refresh`と`terraform state show tidbcloud_import.${resource-name}`使用して、インポート タスクのステータスを更新および確認します。
+3.  Use `terraform refresh` and `terraform state show tidbcloud_import.${resource-name}` to update and check the status of the import task.
 
-## インポートタスクを更新する {#update-an-import-task}
+## Update an import task {#update-an-import-task}
 
-インポート タスクを更新できません。
+Import tasks cannot be updated.
 
-## インポートタスクを削除する {#delete-an-import-task}
+## Delete an import task {#delete-an-import-task}
 
-Terraform の場合、インポート タスクを削除すると、対応するインポート リソースがキャンセルされます。
+For Terraform, deleting an import task means canceling the corresponding import resource.
 
-`COMPLETED`インポート タスクをキャンセルすることはできません。キャンセルすると、次の例のように`Delete Error`取得されます。
+You cannot cancel a `COMPLETED` import task. Otherwise, you will get a `Delete Error` as in the following example:
 
     $ terraform destroy
     ...
@@ -259,7 +259,7 @@ Terraform の場合、インポート タスクを削除すると、対応する
     │ import}
     ╵
 
-ステータスが`IMPORTING`インポート タスクをキャンセルできます。例:
+You can cancel an import task whose status is `IMPORTING`. For example:
 
     $ terraform destroy
     ...
@@ -276,6 +276,6 @@ Terraform の場合、インポート タスクを削除すると、対応する
 
     Destroy complete! Resources: 1 destroyed.
 
-## 構成 {#configurations}
+## Configurations {#configurations}
 
-インポート リソースで使用可能なすべての構成を取得するには、 [構成ドキュメント](https://registry.terraform.io/providers/tidbcloud/tidbcloud/latest/docs/resources/import)参照してください。
+See [configuration documentation](https://registry.terraform.io/providers/tidbcloud/tidbcloud/latest/docs/resources/import) to get all the available configurations for the import resource.
