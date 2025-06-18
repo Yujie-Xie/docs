@@ -1,40 +1,40 @@
 ---
 title: API Keys in Data Service
-summary: データ アプリの API キーを作成、編集、削除する方法を学びます。
+summary: Learn how to create, edit, and delete an API key for a Data App.
 ---
 
-# データサービスの API キー {#api-keys-in-data-service}
+# API Keys in Data Service {#api-keys-in-data-service}
 
-TiDB Cloud Data API は[基本認証](https://en.wikipedia.org/wiki/Basic_access_authentication)と[ダイジェスト認証](https://en.wikipedia.org/wiki/Digest_access_authentication)両方をサポートします。
+The TiDB Cloud Data API supports both [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) and [Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication).
 
--   [基本認証](https://en.wikipedia.org/wiki/Basic_access_authentication)暗号化されていない base64 エンコードを使用して公開鍵と秘密鍵を送信します。HTTPS により、送信のセキュリティが確保されます。詳細については、 [RFC 7617 - 「基本」HTTP 認証スキーム](https://datatracker.ietf.org/doc/html/rfc7617)参照してください。
--   [ダイジェスト認証](https://en.wikipedia.org/wiki/Digest_access_authentication) 、ネットワーク送信前に公開鍵、秘密鍵、サーバーから提供された nonce 値、HTTP メソッド、および要求された URI をハッシュすることにより、追加のセキュリティレイヤーを提供します。これにより、秘密鍵が暗号化され、プレーン テキストで送信されることが防止されます。詳細については、 [RFC 7616 - HTTP ダイジェスト アクセス認証](https://datatracker.ietf.org/doc/html/rfc7616)参照してください。
+-   [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) uses non-encrypted base64 encoding to transmit your public key and private key. HTTPS ensures the transmission security. For more information, see [RFC 7617 - The 'Basic' HTTP Authentication Scheme](https://datatracker.ietf.org/doc/html/rfc7617).
+-   [Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication) offers an additional security layer by hashing your public key, private key, a server-supplied nonce value, the HTTP method, and the requested URI before network transmission. This encrypts the private key to prevent it from being transmitted in plain text. For more information, see [RFC 7616 - HTTP Digest Access Authentication](https://datatracker.ietf.org/doc/html/rfc7616).
 
-> **注記：**
+> **Note:**
 >
-> Data Service の Data API キーは、 [TiDB CloudAPI](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication)で使用されるキーとは異なります。Data API キーはTiDB Cloudクラスターのデータにアクセスするために使用されますが、 TiDB Cloud API キーはプロジェクト、クラスター、バックアップ、復元、インポートなどのリソースを管理するために使用されます。
+> The Data API key in Data Service is different from the key used in the [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication). The Data API key is used to access data in the TiDB Cloud clusters, whereas the TiDB Cloud API key is used to manage resources such as projects, clusters, backups, restores, and imports.
 
-## API キーの概要 {#api-key-overview}
+## API key overview {#api-key-overview}
 
--   API キーには、認証に必要なユーザー名とパスワードとして機能する公開キーと秘密キーが含まれています。秘密キーは、キーの作成時にのみ表示されます。
--   各 API キーは 1 つのデータ アプリにのみ属し、 TiDB Cloudクラスター内のデータにアクセスするために使用されます。
--   すべてのリクエストで正しい API キーを指定する必要があります。そうしないと、 TiDB Cloud は`401`エラーで応答します。
+-   An API key contains a public key and a private key, which act as the username and password required in the authentication. The private key is only displayed upon the key creation.
+-   Each API key belongs to one Data App only and is used to access the data in the TiDB Cloud clusters.
+-   You must provide the correct API key in every request. Otherwise, TiDB Cloud responds with a `401` error.
 
-## レート制限 {#rate-limiting}
+## Rate limiting {#rate-limiting}
 
-リクエストクォータには、次のレート制限が適用されます。
+Request quotas are subject to rate limits as follows:
 
--   TiDB Cloudデータ サービスでは、デフォルトで API キーごとに 1 分あたり最大 100 件のリクエスト (rpm) が許可されます。
+-   TiDB Cloud Data Service allows up to 100 requests per minute (rpm) per API key by default.
 
-    API キーのレート制限は、キーを[作成する](#create-an-api-key)するときに編集できます。サポートされる値の範囲は`1` ～ [編集](#edit-an-api-key)です。1 分あたりのリクエスト数がレート制限を超えると、API は`429`を返します。API キーごとに 1000 rpm を超えるクォータ`1000`取得するには、サポート チームに[リクエストを送信する](https://tidb.support.pingcap.com/)連絡ください。
+    You can edit the rate limit of an API key when you [create](#create-an-api-key) or [edit](#edit-an-api-key) the key. The supported value range is from `1` to `1000`. If your requests per minute exceed the rate limit, the API returns a `429` error. To get a quota of more than 1000 rpm per API key, you can [submit a request](https://tidb.support.pingcap.com/) to our support team.
 
-    各 API リクエストは、制限に関する次のヘッダーを返します。
+    Each API request returns the following headers about the limit.
 
-    -   `X-Ratelimit-Limit-Minute` : 1 分あたりに許可されるリクエストの数。
-    -   `X-Ratelimit-Remaining-Minute` : 現在の 1 分間の残りのリクエスト数。 `0`に達すると、API は`429`エラーを返し、レート制限を超えたことを示します。
-    -   `X-Ratelimit-Reset` : 現在のレート制限がリセットされる時間（秒）。
+    -   `X-Ratelimit-Limit-Minute`: The number of requests allowed per minute.
+    -   `X-Ratelimit-Remaining-Minute`: The number of remaining requests in the current minute. When it reaches `0`, the API returns a `429` error and indicates that you exceed the rate limit.
+    -   `X-Ratelimit-Reset`: The time in seconds at which the current rate limit resets.
 
-    レート制限を超えると、次のようなエラー応答が返されます。
+    If you exceed the rate limit, an error response returns like this:
 
     ```bash
     HTTP/2 429
@@ -51,13 +51,13 @@ TiDB Cloud Data API は[基本認証](https://en.wikipedia.org/wiki/Basic_access
     {"type":"","data":{"columns":[],"rows":[],"result":{"latency":"","row_affect":0,"code":49900007,"row_count":0,"end_ms":0,"limit":0,"message":"API key rate limit exceeded. The limit can be increased up to 1000 requests per minute per API key in TiDB Cloud console. For an increase in quota beyond 1000 rpm, please contact us: https://tidb.support.pingcap.com/","start_ms":0}}}
     ```
 
--   TiDB Cloudデータ サービスでは、Chat2Query データ アプリごとに 1 日あたり最大 100 件のリクエストが許可されます。
+-   TiDB Cloud Data Service allows up to 100 requests per day for each Chat2Query Data App.
 
-## API キーの有効期限 {#api-key-expiration}
+## API key expiration {#api-key-expiration}
 
-デフォルトでは、API キーに有効期限はありません。ただし、セキュリティを考慮して、キーを[作成する](#create-an-api-key)または[編集](#edit-an-api-key)アップグレードするときに API キーの有効期限を指定できます。
+By default, API keys never expire. However, for security considerations, you can specify an expiration time for your API key when you [create](#create-an-api-key) or [edit](#edit-an-api-key) the key.
 
--   API キーは有効期限前のみ有効です。有効期限が切れると、そのキーを使用するすべてのリクエストは`401`エラーで失敗し、応答は次のようになります。
+-   An API key is valid only before its expiration time. Once expired, all requests using that key will fail with a `401` error, and the response is similar as follows:
 
     ```bash
     HTTP/2 401
@@ -71,96 +71,96 @@ TiDB Cloud Data API は[基本認証](https://en.wikipedia.org/wiki/Basic_access
     {"data":{"result":{"start_ms":0,"end_ms":0,"latency":"","row_affect":0,"limit":0,"code":49900002,"message":"API Key is no longer valid","row_count":0},"columns":[],"rows":[]},"type":""}
     ```
 
--   API キーを手動で期限切れにすることもできます。詳細な手順については、 [APIキーの有効期限切れ](#expire-an-api-key)と[すべてのAPIキーの有効期限が切れる](#expire-all-api-keys)参照してください。API キーを手動で期限切れにすると、有効期限は直ちに有効になります。
+-   You can also expire API keys manually. For detailed steps, see [Expire an API key](#expire-an-api-key) and [Expire all API keys](#expire-all-api-keys). Once you manually expire an API key, the expiration takes effect immediately.
 
--   対象のデータ アプリの**認証**領域で、API キーのステータスと有効期限を確認できます。
+-   You can check the status and expiration time of your API keys in the **Authentication** area of your target Data App.
 
--   有効期限が切れると、API キーを再度有効化したり編集したりすることはできません。
+-   Once expired, an API key cannot be activated or edited again.
 
-## APIキーを管理する {#manage-api-keys}
+## Manage API keys {#manage-api-keys}
 
-次のセクションでは、データ アプリの API キーを作成、編集、削除、期限切れにする方法について説明します。
+The following sections describe how to create, edit, delete, and expire API keys for a Data App.
 
-### APIキーを作成する {#create-an-api-key}
+### Create an API key {#create-an-api-key}
 
-データ アプリの API キーを作成するには、次の手順を実行します。
+To create an API key for a Data App, perform the following steps:
 
-1.  プロジェクトの[**データサービス**](https://tidbcloud.com/console/data-service)ページに移動します。
+1.  Navigate to the [**Data Service**](https://tidbcloud.com/project/data-service) page of your project.
 
-2.  左側のペインで、対象のデータ アプリの名前をクリックして詳細を表示します。
+2.  In the left pane, click the name of your target Data App to view its details.
 
-3.  **認証**領域で、 **「API キーの作成」を**クリックします。
+3.  In the **Authentication** area, click **Create API Key**.
 
-4.  **[API キーの作成]**ダイアログ ボックスで、次の操作を行います。
+4.  In the **Create API Key** dialog box, do the following:
 
-    1.  (オプション) API キーの説明を入力します。
+    1.  (Optional) Enter a description for your API key.
 
-    2.  API キーのロールを選択します。
+    2.  Select a role for your API key.
 
-        このロールは、API キーがデータ アプリにリンクされたクラスターにデータを読み書きできるかどうかを制御するために使用されます`ReadOnly`または`ReadAndWrite`ロールを選択できます。
+        The role is used to control whether the API key can read or write data to the clusters linked to the Data App. You can select the `ReadOnly` or `ReadAndWrite` role:
 
-        -   `ReadOnly` : API キーは`SELECT` 、 `SHOW` 、 `USE` 、 `DESC` 、 `EXPLAIN`ステートメントなどのデータのみを読み取ることができます。
-        -   `ReadAndWrite` : API キーによるデータの読み取りと書き込みを許可します。この API キーを使用して、DML ステートメントや DDL ステートメントなどのすべての SQL ステートメントを実行できます。
+        -   `ReadOnly`: only allows the API key to read data, such as `SELECT`, `SHOW`, `USE`, `DESC`, and `EXPLAIN` statements.
+        -   `ReadAndWrite`: allows the API key to read and write data. You can use this API key to execute all SQL statements, such as DML and DDL statements.
 
-    3.  (オプション) API キーに必要なレート制限を設定します。
+    3.  (Optional) Set a desired rate limit for your API key.
 
-        1 分あたりのリクエスト数がレート制限を超えると、API は`429`エラーを返します。API キーごとに 1 分あたり 1000 リクエスト (rpm) を超えるクォータを取得するには、サポート チームに[リクエストを送信する](https://tidb.support.pingcap.com/)連絡してください。
+        If your requests per minute exceed the rate limit, the API returns a `429` error. To get a quota of more than 1000 requests per minute (rpm) per API key, you can [submit a request](https://tidb.support.pingcap.com/) to our support team.
 
-    4.  (オプション) API キーの有効期限を設定します。
+    4.  (Optional) Set a desired expiration time for your API key.
 
-        デフォルトでは、API キーの有効期限はありません。API キーの有効期限`Days`指定する場合は、 **[有効期限]**をクリックし、時間単位 ( `Minutes` 、または`Months` ) を選択して、時間単位に必要な数値を入力します。
+        By default, an API key never expires. If you prefer to specify an expiration time for the API key, click **Expires in**, select a time unit (`Minutes`, `Days`, or `Months`), and then fill in a desired number for the time unit.
 
-5.  **「次へ」**をクリックします。公開鍵と秘密鍵が表示されます。
+5.  Click **Next**. The public key and private key are displayed.
 
-    秘密鍵をコピーして安全な場所に保存したことを確認してください。このページを離れると、完全な秘密鍵を再度取得できなくなります。
+    Make sure that you have copied and saved the private key in a secure location. After leaving this page, you will not be able to get the full private key again.
 
-6.  **「完了」**をクリックします。
+6.  Click **Done**.
 
-### APIキーを編集する {#edit-an-api-key}
+### Edit an API key {#edit-an-api-key}
 
-> **注記**：
+> **Note**:
 >
-> 期限切れのキーは編集できません。
+> You cannot edit an expired key.
 
-API キーの説明またはレート制限を編集するには、次の手順を実行します。
+To edit the description or rate limit of an API key, perform the following steps:
 
-1.  プロジェクトの[**データサービス**](https://tidbcloud.com/console/data-service)ページに移動します。
-2.  左側のペインで、対象のデータ アプリの名前をクリックして詳細を表示します。
-3.  **[認証]**領域で、 **[アクション**] 列を見つけて、変更する API キー行で**[...]** &gt; **[編集]**をクリックします。
-4.  API キーの説明、ロール、レート制限、または有効期限を更新します。
-5.  **[更新]**をクリックします。
+1.  Navigate to the [**Data Service**](https://tidbcloud.com/project/data-service) page of your project.
+2.  In the left pane, click the name of your target Data App to view its details.
+3.  In the **Authentication** area, locate the **Action** column, and then click **...** > **Edit** in the API key row that you want to change.
+4.  Update the description, role, rate limit, or expiration time of the API key.
+5.  Click **Update**.
 
-### APIキーを削除する {#delete-an-api-key}
+### Delete an API key {#delete-an-api-key}
 
-> **注記：**
+> **Note:**
 >
-> API キーを削除する前に、その API キーがどのデータ アプリでも使用されていないことを確認してください。
+> Before you delete an API key, make sure that the API key is not used by any Data App.
 
-データ アプリの API キーを削除するには、次の手順を実行します。
+To delete an API key for a Data App, perform the following steps:
 
-1.  プロジェクトの[**データサービス**](https://tidbcloud.com/console/data-service)ページに移動します。
-2.  左側のペインで、対象のデータ アプリの名前をクリックして詳細を表示します。
-3.  **API キー**領域で、**アクション**列を見つけて、削除する API キー行で**...** &gt;**削除を**クリックします。
-4.  表示されたダイアログボックスで削除を確認します。
+1.  Navigate to the [**Data Service**](https://tidbcloud.com/project/data-service) page of your project.
+2.  In the left pane, click the name of your target Data App to view its details.
+3.  In the **API Key** area, locate the **Action** column, and then click **...** > **Delete** in the API key row that you want to delete.
+4.  In the displayed dialog box, confirm the deletion.
 
-### APIキーの有効期限切れ {#expire-an-api-key}
+### Expire an API key {#expire-an-api-key}
 
-> **注記**：
+> **Note**:
 >
-> 期限切れのキーを期限切れにすることはできません。
+> You cannot expire an expired key.
 
-データ アプリの API キーを期限切れにするには、次の手順を実行します。
+To expire an API key for a Data App, perform the following steps:
 
-1.  プロジェクトの[**データサービス**](https://tidbcloud.com/console/data-service)ページに移動します。
-2.  左側のペインで、対象のデータ アプリの名前をクリックして詳細を表示します。
-3.  **[認証]**領域で、 **[アクション**] 列を見つけて、期限切れにする API キーの行で**[...]** &gt; **[今すぐ期限切れ]**をクリックします。
-4.  表示されたダイアログボックスで有効期限を確認します。
+1.  Navigate to the [**Data Service**](https://tidbcloud.com/project/data-service) page of your project.
+2.  In the left pane, click the name of your target Data App to view its details.
+3.  In the **Authentication** area, locate the **Action** column, and then click **...** > **Expire Now** in the API key row that you want to expire.
+4.  In the displayed dialog box, confirm the expiration.
 
-### すべてのAPIキーの有効期限が切れる {#expire-all-api-keys}
+### Expire all API keys {#expire-all-api-keys}
 
-データ アプリのすべての API キーを期限切れにするには、次の手順を実行します。
+To expire all API keys for a Data App, perform the following steps:
 
-1.  プロジェクトの[**データサービス**](https://tidbcloud.com/console/data-service)ページに移動します。
-2.  左側のペインで、対象のデータ アプリの名前をクリックして詳細を表示します。
-3.  **認証**領域で、 **「すべて期限切れ」**をクリックします。
-4.  表示されたダイアログボックスで有効期限を確認します。
+1.  Navigate to the [**Data Service**](https://tidbcloud.com/project/data-service) page of your project.
+2.  In the left pane, click the name of your target Data App to view its details.
+3.  In the **Authentication** area, click **Expire All**.
+4.  In the displayed dialog box, confirm the expiration.

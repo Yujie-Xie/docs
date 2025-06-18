@@ -1,80 +1,90 @@
 ---
 title: Analyze and Tune Performance
-summary: TiDB Cloudクラスターのパフォーマンスを分析および調整する方法を学びます。
+summary: Learn how to analyze and tune performance of your TiDB Cloud cluster.
 ---
 
-# パフォーマンスの分析と調整 {#analyze-and-tune-performance}
+# Analyze and Tune Performance {#analyze-and-tune-performance}
 
-TiDB Cloud は、パフォーマンスを分析するために[遅いクエリ](#slow-query) 、 [ステートメント分析](#statement-analysis) 、 [キービジュアライザー](#key-visualizer) 、 [インデックスインサイト（ベータ版）](#index-insight-beta)提供します。
+TiDB Cloud provides [Slow Query](#slow-query), [Statement Analysis](#statement-analysis), [Key Visualizer](#key-visualizer), and [Index Insight (beta)](#index-insight-beta) to analyze performance.
 
--   スロー クエリを使用すると、TiDB クラスター内のすべてのスロー クエリを検索して表示し、実行プラン、SQL 実行情報、その他の詳細を表示して、各スロー クエリのボトルネックを調査できます。
+-   Slow Query lets you search and view all slow queries in your TiDB cluster, and explore the bottlenecks of each slow query by viewing its execution plan, SQL execution information, and other details.
 
--   ステートメント分析を使用すると、ページ上の SQL 実行を直接観察し、システム テーブルをクエリせずにパフォーマンスの問題を簡単に見つけることができます。
+-   Statement Analysis enables you to directly observe the SQL execution on the page, and easily locate performance problems without querying the system tables.
 
--   Key Visualizer は、TiDB のデータ アクセス パターンとデータ ホットスポットを観察するのに役立ちます。
+-   Key Visualizer helps you observe TiDB's data access patterns and data hotspots.
 
--   Index Insight は、意味のある実用的なインデックス推奨事項を提供します。
+-   Index Insight provides you with meaningful and actionable index recommendations.
 
-> **注記：**
+> **Note:**
 >
-> 現在、 **Key Visualizer**と**Index Insight (ベータ版)**は[TiDB Cloudサーバーレス](/tidb-cloud/select-cluster-tier.md#tidb-cloud-serverless)クラスターで利用できません。
+> Currently, **Key Visualizer** and **Index Insight (beta)** are unavailable for [TiDB Cloud Serverless](/tidb-cloud/select-cluster-tier.md#tidb-cloud-serverless) clusters.
 
-## 遅いクエリ {#slow-query}
+## View the Diagnosis page {#view-the-diagnosis-page}
 
-デフォルトでは、300 ミリ秒以上かかる SQL クエリは遅いクエリと見なされます。
+1.  On the [**Clusters**](https://tidbcloud.com/project/clusters) page of your project, click the name of your target cluster to go to its overview page.
 
-クラスター内の遅いクエリを表示するには、次の手順を実行します。
+    > **Tip:**
+    >
+    > You can use the combo box in the upper-left corner to switch between organizations, projects, and clusters.
 
-1.  クラスターの**診断**ページに移動します。
+2.  In the left navigation pane, click **Monitoring** > **Diagnosis**.
 
-2.  **[スロー クエリ]**タブをクリックします。
+## Slow Query {#slow-query}
 
-3.  リスト内の遅いクエリをクリックすると、詳細な実行情報が表示されます。
+By default, SQL queries that take more than 300 milliseconds are considered as slow queries.
 
-4.  (オプション) ターゲット時間範囲、関連データベース、SQL キーワードに基づいて、スロー クエリをフィルターできます。また、表示されるスロー クエリの数を制限することもできます。
+To view slow queries in a cluster, perform the following steps:
 
-結果は表形式で表示され、さまざまな列で結果を並べ替えることができます。
+1.  Navigate to the [**Diagnosis**](#view-the-diagnosis-page) page of a cluster.
 
-詳細については[TiDB ダッシュボードの遅いクエリ](https://docs.pingcap.com/tidb/stable/dashboard-slow-query)参照してください。
+2.  Click the **Slow Query** tab.
 
-## ステートメント分析 {#statement-analysis}
+3.  Click any slow query in the list to display its detailed execution information.
 
-ステートメント分析を使用するには、次の手順を実行します。
+4.  (Optional) You can filter slow queries based on the target time range, the related databases, and SQL keywords. You can also limit the number of slow queries to be displayed.
 
-1.  クラスターの**診断**ページに移動します。
+The results are displayed in the form of a table, and you can sort the results by different columns.
 
-2.  **[SQL ステートメント]**タブをクリックします。
+For more information, see [Slow Queries in TiDB Dashboard](https://docs.pingcap.com/tidb/stable/dashboard-slow-query).
 
-3.  時間間隔ボックスで分析する期間を選択します。すると、この期間内のすべてのデータベースの SQL ステートメントの実行統計を取得できます。
+## Statement Analysis {#statement-analysis}
 
-4.  (オプション) 特定のデータベースのみを対象とする場合は、次のボックスで対応するスキーマを選択して結果をフィルタリングできます。
+To use the statement analysis, perform the following steps:
 
-結果は表形式で表示され、さまざまな列で結果を並べ替えることができます。
+1.  Navigate to the [**Diagnosis**](#view-the-diagnosis-page) page of a cluster.
 
-詳細については[TiDBダッシュボードのステートメント実行の詳細](https://docs.pingcap.com/tidb/stable/dashboard-statement-details)参照してください。
+2.  Click the **SQL Statement** tab.
 
-## キービジュアライザー {#key-visualizer}
+3.  Select the time period to be analyzed in the time interval box. Then you can get the execution statistics of SQL statements of all databases in this period.
 
-> **注記：**
+4.  (Optional) If you only care about certain databases, you can select the corresponding schema(s) in the next box to filter the results.
+
+The results are displayed in the form of a table, and you can sort the results by different columns.
+
+For more information, see [Statement Execution Details in TiDB Dashboard](https://docs.pingcap.com/tidb/stable/dashboard-statement-details).
+
+## Key Visualizer {#key-visualizer}
+
+> **Note:**
 >
-> Key Visualizer は[TiDB Cloud専用](/tidb-cloud/select-cluster-tier.md#tidb-cloud-dedicated)クラスターでのみ使用できます。
+> Key Visualizer is only available for [TiDB Cloud Dedicated](/tidb-cloud/select-cluster-tier.md#tidb-cloud-dedicated) clusters.
 
-主要な分析を表示するには、次の手順を実行します。
+To view the key analytics, perform the following steps:
 
-1.  クラスターの**診断**ページに移動します。
+1.  Navigate to the [**Diagnosis**](#view-the-diagnosis-page) page of a cluster.
 
-2.  **[キー ビジュアライザー]**タブをクリックします。
+2.  Click the **Key Visualizer** tab.
 
-**Key Visualizer**ページでは、大きなヒート マップで、時間の経過に伴うアクセス トラフィックの変化が表示されます。ヒート マップの各軸に沿った平均値が下と右側に表示されます。左側には、テーブル名、インデックス名などの情報が表示されます。
+On the **Key Visualizer** page, a large heat map shows changes on access traffic over time. The average values ​​along each axis of the heat map are shown below and on the right side. The left side is the table name, index name and other information.
 
-詳細については[キービジュアライザー](https://docs.pingcap.com/tidb/stable/dashboard-key-visualizer)参照してください。
+For more information, see [Key Visualizer](https://docs.pingcap.com/tidb/stable/dashboard-key-visualizer).
 
-## インデックスインサイト（ベータ版） {#index-insight-beta}
+## Index Insight (beta) {#index-insight-beta}
 
-TiDB Cloudの Index Insight 機能は、インデックスを効果的に使用していない低速クエリに対して推奨インデックスを提供することで、クエリ パフォーマンスを最適化する強力な機能を提供します。
+The Index Insight feature in TiDB Cloud provides powerful capabilities to optimize query performance by offering recommended indexes for slow queries that are not utilizing indexes effectively.
 
-> **注記：**
+> **Note:**
 >
-> Index Insight は現在ベータ版であり、 [TiDB Cloud専用](/tidb-cloud/select-cluster-tier.md#tidb-cloud-dedicated)クラスターでのみ使用できます。
+> Index Insight is currently in beta and only available for [TiDB Cloud Dedicated](/tidb-cloud/select-cluster-tier.md#tidb-cloud-dedicated) clusters.
 
-詳細については[インデックスインサイト](/tidb-cloud/index-insight.md)参照してください。
+For more information, see [Index Insight](/tidb-cloud/index-insight.md).

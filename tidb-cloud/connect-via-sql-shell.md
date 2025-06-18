@@ -1,26 +1,26 @@
 ---
 title: Connect via SQL Shell
-summary: SQL Shell 経由で TiDB クラスターに接続する方法を学習します。
+summary: Learn how to connect to your TiDB cluster via SQL Shell.
 ---
 
-# SQL シェル経由で接続する {#connect-via-sql-shell}
+# Connect via SQL Shell {#connect-via-sql-shell}
 
-TiDB Cloud SQL Shell では、 TiDB SQLを試したり、TiDB と MySQL の互換性を素早くテストしたり、データベース ユーザー権限を管理したりできます。
+In TiDB Cloud SQL Shell, you can try TiDB SQL, test out TiDB's compatibility with MySQL quickly, and administer database user privileges.
 
-> **注記：**
+> **Note:**
 >
-> SQL Shell を使用して[TiDB Cloudサーバーレス クラスター](/tidb-cloud/select-cluster-tier.md#tidb-cloud-serverless)に接続することはできません。TiDB TiDB Cloud Serverless クラスターに接続するには、 [TiDB Cloud Serverless クラスターに接続する](/tidb-cloud/connect-to-tidb-cluster-serverless.md)参照してください。
+> You cannot connect to [TiDB Cloud Serverless clusters](/tidb-cloud/select-cluster-tier.md#tidb-cloud-serverless) using SQL Shell. To connect to your TiDB Cloud Serverless cluster, see [Connect to TiDB Cloud Serverless clusters](/tidb-cloud/connect-to-tidb-cluster-serverless.md).
 
-SQL シェルを使用して TiDB クラスターに接続するには、次の手順を実行します。
+To connect to your TiDB cluster using SQL shell, perform the following steps:
 
-1.  [TiDB Cloudコンソール](https://tidbcloud.com/)にログインし、プロジェクトの[**クラスター**](https://tidbcloud.com/console/clusters)ページに移動します。
+1.  Log in to the [TiDB Cloud console](https://tidbcloud.com/) and navigate to the [**Clusters**](https://tidbcloud.com/project/clusters) page of your project.
 
-    > **ヒント：**
+    > **Tip:**
     >
-    > 複数のプロジェクトがある場合は、<mdsvgicon name="icon-left-projects">左下隅にある をクリックして、別のプロジェクトに切り替えます。</mdsvgicon>
+    > You can use the combo box in the upper-left corner to switch between organizations, projects, and clusters.
 
-2.  ターゲット クラスターの名前をクリックしてクラスターの概要ページに移動し、左側のナビゲーション ペインで**[ネットワーク]**をクリックします。
+2.  Click the name of your target cluster to go to its cluster overview page, and then click **Settings** > **Networking** in the left navigation pane.
 
-3.  **[ネットワーク]**ページで、右上隅にある**[Web SQL Shell]**をクリックします。
+3.  On the **Networking** page, click **Web SQL Shell** in the upper-right corner.
 
-4.  プロンプトの「**パスワードの入力**」行に、現在のクラスターのルート パスワードを入力します。これで、アプリケーションが TiDB クラスターに接続されます。
+4.  On the prompted **Enter password** line, enter the root password of the current cluster. Then your application is connected to the TiDB cluster.

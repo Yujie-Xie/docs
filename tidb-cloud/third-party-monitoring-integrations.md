@@ -1,46 +1,45 @@
 ---
 title: Third-Party Metrics Integrations（Beta）
-summary: サードパーティのメトリクス統合の使用方法を学びます。
+summary: Learn how to use third-party metrics integrations.
 ---
 
-# サードパーティメトリクス統合（ベータ版） {#third-party-metrics-integrations-beta}
+# Third-Party Metrics Integrations（Beta） {#third-party-metrics-integrations-beta}
 
-TiDB Cloud をサードパーティのメトリクス サービスと統合して、 TiDB Cloudアラートを受信し、メトリクス サービスを使用して TiDB クラスターのパフォーマンス メトリクスを表示できます。サードパーティのメトリクス統合は現在ベータ版です。
+You can integrate TiDB Cloud with third-party metrics services to receive TiDB Cloud alerts and view the performance metrics of your TiDB cluster using the metrics services. The third-party metrics integrations are currently in beta.
 
-## 必要なアクセス {#required-access}
+## Required access {#required-access}
 
-サードパーティ統合設定を編集するには、組織の`Organization Owner`のロールまたは対象プロジェクトの`Project Owner`のロールを持っている必要があります。
+To edit third-party integration settings, you must be in the `Organization Owner` role of your organization or the `Project Owner` role of the target project.
 
-## サードパーティの統合をビューまたは変更する {#view-or-modify-third-party-integrations}
+## View or modify third-party integrations {#view-or-modify-third-party-integrations}
 
-1.  [TiDB Cloudコンソール](https://tidbcloud.com)にログインします。
-2.  クリック<mdsvgicon name="icon-left-projects">左下隅で、複数のプロジェクトがある場合は対象プロジェクトに切り替えて、 **[プロジェクト設定]**をクリックします。</mdsvgicon>
-3.  プロジェクトの**プロジェクト設定**ページで、左側のナビゲーション ペインの**[統合]**をクリックします。
+1.  In the [TiDB Cloud console](https://tidbcloud.com), switch to your target project using the combo box in the upper-left corner.
+2.  In the left navigation pane, click **Project Settings** > **Integrations**.
 
-利用可能なサードパーティ統合が表示されます。
+The available third-party integrations are displayed.
 
-## 制限 {#limitation}
+## Limitation {#limitation}
 
--   [TiDB Cloudサーバーレス](/tidb-cloud/select-cluster-tier.md#tidb-cloud-serverless)クラスターの場合、サードパーティのメトリック統合はサポートされていません。
+-   For [TiDB Cloud Serverless](/tidb-cloud/select-cluster-tier.md#tidb-cloud-serverless) clusters, third-party metrics integrations are not supported.
 
--   クラスターのステータスが**CREATING** 、 **RESTORING** 、 **PAUSED** 、または**RESUMING**の場合、サードパーティのメトリクス統合は使用できません。
+-   Third-party metrics integrations are not available when the cluster status is **CREATING**, **RESTORING**, **PAUSED**, or **RESUMING**.
 
-## 利用可能な統合 {#available-integrations}
+## Available integrations {#available-integrations}
 
-### Datadog 統合 (ベータ版) {#datadog-integration-beta}
+### Datadog integration (beta) {#datadog-integration-beta}
 
-Datadog 統合を使用すると、 TiDB Cloud を構成して、TiDB クラスターに関するメトリック データを[データドッグ](https://www.datadoghq.com/)に送信し、これらのメトリックを Datadog ダッシュボードで表示できます。
+With the Datadog integration, you can configure TiDB Cloud to send metric data about your TiDB clusters to [Datadog](https://www.datadoghq.com/) and view these metrics in your Datadog dashboards.
 
-詳細な統合手順と Datadog が追跡するメトリクスのリストについては、 [TiDB Cloudと Datadog を統合する](/tidb-cloud/monitor-datadog-integration.md)を参照してください。
+For the detailed integration steps and a list of metrics that Datadog tracks, refer to [Integrate TiDB Cloud with Datadog](/tidb-cloud/monitor-datadog-integration.md).
 
-### Prometheus と Grafana の統合 (ベータ版) {#prometheus-and-grafana-integration-beta}
+### Prometheus and Grafana integration (beta) {#prometheus-and-grafana-integration-beta}
 
-Prometheus と Grafana の統合により、 TiDB Cloudから Prometheus 用の`scrape_config`ファイルを取得し、そのファイルの内容を使用して Prometheus を構成できます。これらのメトリックは Grafana ダッシュボードで表示できます。
+With the Prometheus and Grafana integration, you can get a `scrape_config` file for Prometheus from TiDB Cloud and use the content from the file to configure Prometheus. You can view these metrics in your Grafana dashboards.
 
-詳細な統合手順と Prometheus が追跡するメトリックのリストについては、 [TiDB Cloud をPrometheus および Grafana と統合する](/tidb-cloud/monitor-prometheus-and-grafana-integration.md)参照してください。
+For the detailed integration steps and a list of metrics that Prometheus tracks, see [Integrate TiDB Cloud with Prometheus and Grafana](/tidb-cloud/monitor-prometheus-and-grafana-integration.md).
 
-### New Relic 統合 (ベータ版) {#new-relic-integration-beta}
+### New Relic integration (beta) {#new-relic-integration-beta}
 
-New Relic 統合を使用すると、 TiDB Cloud を構成して、TiDB クラスターに関するメトリック データを[ニューレリック](https://newrelic.com/)に送信し、これらのメトリックを New Relic ダッシュボードで表示できます。
+With the New Relic integration, you can configure TiDB Cloud to send metric data about your TiDB clusters to [New Relic](https://newrelic.com/) and view these metrics in your New Relic dashboards.
 
-詳細な統合手順と New Relic が追跡するメトリックのリストについては、 [TiDB CloudとNew Relicを統合する](/tidb-cloud/monitor-new-relic-integration.md)参照してください。
+For the detailed integration steps and a list of metrics that New Relic tracks, see [Integrate TiDB Cloud with New Relic](/tidb-cloud/monitor-new-relic-integration.md).

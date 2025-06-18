@@ -1,68 +1,69 @@
 ---
 title: Failover and Reprotect Databases
-summary: リカバリ グループを使用して、 TiDB Cloudクラスター間でデータベースをフェイルオーバーし、再保護する方法を学習します。
+summary: Learn how to use a Recovery Group to failover and reprotect databases between TiDB Cloud clusters.
 ---
 
-# データベースのフェイルオーバーと再保護 {#failover-and-reprotect-databases}
+# Failover and Reprotect Databases {#failover-and-reprotect-databases}
 
-リカバリ グループ内のデータベースは、通常はクラウド サービス プロバイダーの別のリージョンにあるクラスター間で複製されます。
+Databases in a recovery group are replicated from one cluster to another, typically in a different region of the cloud service provider.
 
-**フェールオーバー**アクションは、セカンダリ リージョン内の複製されたデータベースを新しいプライマリ コピーに昇格させ、リージョンの停止中でも継続的な可用性を確保します。
+The **Failover** action promotes the replicated databases in the secondary region to be the new primary copy, ensuring ongoing availability during a regional outage.
 
-リージョンの障害が解決されると、**再保護**アクションを使用して、リカバリ リージョンから元のリージョンへのレプリケーションを元に戻す機能が実行されます。これにより、データベースは新しいリージョンに影響を与える将来の災害から保護され、必要に応じて元のリージョンへの移行の準備が整います。
+When the regional outage is resolved, the ability to reverse the replication from the recovery region back to the original region is done using the **Reprotect** action. This ensures that the databases are protected against future disasters impacting their new region, and prepares them for migration back to the original region if desired.
 
-## 前提条件 {#prerequisites}
+## Prerequisites {#prerequisites}
 
-フェイルオーバーを実行する前に、リカバリ グループが作成され、セカンダリ クラスターに正常にレプリケートされている必要があります。詳細については、 [リカバリグループの使用を開始する](/tidb-cloud/recovery-group-get-started.md)参照してください。
+Before performing a failover, a recovery group should have been created and be successfully replicating to the secondary cluster. For more information, see [Get Started with Recovery Groups](/tidb-cloud/recovery-group-get-started.md).
 
 ![Protected Recovery Group](/media/tidb-cloud/recovery-group/recovery-group-protected.png)
 
-## リカバリグループを使用したデータベースのフェイルオーバー {#failover-databases-using-a-recovery-group}
+## Failover databases using a recovery group {#failover-databases-using-a-recovery-group}
 
-災害が発生した場合は、リカバリ グループを使用してデータベースをセカンダリ クラスターにフェールオーバーできます。
+In the event of a disaster, you can use the recovery group to failover databases to the secondary cluster.
 
-1.  [TiDB Cloudコンソール](https://tidbcloud.com/)で、<mdsvgicon name="icon-left-projects">左下隅で、複数のプロジェクトがある場合は対象プロジェクトに切り替えて、 **[プロジェクト設定]**をクリックします。</mdsvgicon>
+1.  In the [TiDB Cloud console](https://tidbcloud.com/), switch to your target project using the combo box in the upper-left corner.
 
-2.  **プロジェクト設定**ナビゲーション ペインで、**回復グループ**をクリックします。
+2.  In the left navigation pane, click **Recovery Group**.
 
-3.  **[リカバリ グループ]**ページで、フェールオーバーするリカバリ グループの名前を見つけます。
+3.  On the **Recovery Group** page, locate the name of the recovery group that you wish to failover.
 
-4.  回復グループの**[アクション]**メニューをクリックし、 **[フェールオーバー]**をクリックします。フェールオーバー ダイアログが表示されます。
+4.  Click the **Action** menu for the recovery group, and then click **Failover**. The failover dialog is displayed.
 
-    > **警告**
+    > **Warning**
     >
-    > フェイルオーバーを実行すると、既存のレプリケーション関係が切断されます。
+    > Performing a failover will sever the existing replication relationship.
 
-5.  プライマリ コピーに昇格するセカンダリTiDB Cloudクラスターを選択します。選択したクラスターが正常な状態であることを確認します。
+5.  Select the secondary TiDB Cloud cluster to be promoted to the primary copy. Ensure that the selected cluster is in a healthy state.
 
-6.  確認エントリに**「フェールオーバー」**と入力し、 **「フェールオーバー グループを理解しました」**をクリックしてフェールオーバーを開始し、フェールオーバーの潜在的な中断の性質を理解していることを確認します。
+6.  Confirm that you understand the potentially disruptive nature of a failover by typing **Failover** into the confirmation entry and clicking **I understand, failover group** to begin the failover.
 
     ![Fail Over Recovery Group](/media/tidb-cloud/recovery-group/recovery-group-failover.png)
 
-## リカバリグループを使用してデータベースを再保護する {#reprotect-databases-using-a-recovery-group}
+## Reprotect databases using a recovery group {#reprotect-databases-using-a-recovery-group}
 
-フェイルオーバーが完了すると、セカンダリ クラスター上のレプリカ データベースがプライマリ コピーになります。ただし、フェイルオーバー プロセスによってレプリケーション関係が停止されるため、これらのデータベースは将来の災害に対して保護されません。
+After a failover completes, the replica databases on the secondary cluster are now the primary copy. However, these databases are unprotected against future disasters as the replication relationship is stopped by the failover process.
 
-災害の影響を受けた元のプライマリ クラスターを再度オンラインにできる場合は、**再保護**アクションを使用して、リカバリ領域から元の領域へのレプリケーションを再確立できます。
+If the original primary cluster that was affected by the disaster can be brought online again, you can re-establish replication from the recovery region back to the original region using the **Reprotect** action.
 
 ![Unprotected Recovery Group](/media/tidb-cloud/recovery-group/recovery-group-unprotected.png)
 
-1.  [TiDB Cloudコンソール](https://tidbcloud.com/)で、<mdsvgicon name="icon-left-projects">左下隅で、複数のプロジェクトがある場合は対象プロジェクトに切り替えて、 **[プロジェクト設定]**をクリックします。</mdsvgicon>
+1.  In the [TiDB Cloud console](https://tidbcloud.com/), switch to your target project using the combo box in the upper-left corner.
 
-2.  **プロジェクト設定**ナビゲーション ペインで、**回復グループ**をクリックします。
+2.  In the left navigation pane, click **Recovery Group**.
 
-3.  **[回復グループ]**ページで、再保護する回復グループの名前を見つけます。
+3.  On the **Recovery Group** page, locate the name of the recovery group that you wish to reprotect.
 
-    > **注記**
+    > **Note**
     >
-    > **リカバリ グループの詳細**ページには、現在のステータスやレプリケーション トポロジなど、リカバリ グループに関する情報が表示されます。再保護の同期中は、転送されるデータの量により、プライマリ クラスターまたはセカンダリ クラスターでのオンライン クエリのパフォーマンスが影響を受ける可能性があります。データベースの再保護は、あまり忙しくない期間にスケジュールすることをお勧めします。
+    > The **Recovery Group Detail** page provides information about the recovery group, including current status and replication topology.
+    > During the reprotect synchronization, due to the volume of data transferred, the online query performance at the primary or secondary clusters might be affected. It is recommended that you schedule the reprotection of databases for a less busy period.
 
-    > **警告**
+    > **Warning**
     >
-    > 再保護操作を実行するために必要なデータ レプリケーションの一環として、選択したデータベースの内容は、ターゲット クラスターで (新しい) プライマリ クラスターのデータベースの内容に置き換えられます。ターゲット クラスターの一意の内容を保持する場合は、再保護操作を実行する前にバックアップを完了してください。
+    > As part of the data replication necessary to perform the reprotect operation, the content of the selected databases will be replaced at the target cluster by the content of the databases from the (new) primary cluster. If you wish to preserve the unique content on the target cluster, complete a backup before performing the Reprotect operation.
 
-4.  回復グループの**[アクション]**メニューをクリックし、 **[再保護]**をクリックします。再保護ダイアログが表示されます。
+4.  Click the **Action** menu for the recovery group, and then click **Reprotect**. The reprotect dialog is displayed.
 
-5.  再保護操作を開始するには、 **「再保護」**をクリックして再保護操作を確認します。
+5.  Confirm the reprotect operation by clicking **Reprotect** to begin the reprotect operation.
 
     ![Reprotect Recovery Group](/media/tidb-cloud/recovery-group/recovery-group-reprotected.png)

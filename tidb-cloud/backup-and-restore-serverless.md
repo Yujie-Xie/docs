@@ -12,6 +12,16 @@ This document describes how to back up and restore your TiDB Cloud Serverless cl
 >
 > To learn how to back up and restore TiDB Cloud Dedicated cluster data, see [Back Up and Restore TiDB Cloud Dedicated Data](/tidb-cloud/backup-and-restore.md).
 
+## View the Backup page {#view-the-backup-page}
+
+1.  On the [**Clusters**](https://tidbcloud.com/project/clusters) page, click the name of your target cluster to go to its overview page.
+
+    > **Tip:**
+    >
+    > You can use the combo box in the upper-left corner to switch between organizations, projects, and clusters.
+
+2.  In the left navigation pane, click **Data** > **Backup**.
+
 ## Automatic backups {#automatic-backups}
 
 TiDB Cloud Serverless automatically backs up your cluster data, allowing you to restore data from a backup snapshot to minimize data loss in the event of a disaster.
@@ -39,7 +49,7 @@ Automatic backup settings vary between free clusters and scalable clusters, as s
 
 To set the backup time for a scalable cluster, perform the following steps:
 
-1.  Navigate to the **Backup** page of a TiDB Cloud Serverless cluster.
+1.  Navigate to the [**Backup**](#view-the-backup-page) page of your cluster.
 
 2.  Click **Backup Setting**. This will open the **Backup Setting** window, where you can configure the automatic backup settings according to your requirements.
 
@@ -93,7 +103,7 @@ If the data is corrupted after a canceled restore and cannot be recovered, conta
 
 To restore your TiDB Cloud Serverless cluster, follow these steps:
 
-1.  Navigate to the **Backup** page of a cluster.
+1.  Navigate to the [**Backup**](#view-the-backup-page) page of your cluster.
 
 2.  Click **Restore**. The setting window displays.
 
@@ -144,5 +154,6 @@ Once the restore process begins, the cluster status changes to **Restoring**. Th
 
 ## Limitations {#limitations}
 
--   If a TiFlash replica is enabled, it will be unavailable for a period after the restore, because data needs to be rebuilt in TiFlash.
+-   If a TiFlash replica is enabled, it will be unavailable for a period after the restore, because the data needs to be rebuilt in TiFlash.
 -   Manual backups are not supported for TiDB Cloud Serverless clusters.
+-   Clusters with more than 1 TiB of data do not support restoring to new clusters by default. Contact [TiDB Cloud Support](/tidb-cloud/tidb-cloud-support.md) for assistance with larger datasets.

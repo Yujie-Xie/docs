@@ -1,28 +1,28 @@
 ---
 title: Use the OpenAPI Specification of a Data App with Next.js
-summary: データ アプリの OpenAPI 仕様を使用してクライアント コードを生成し、Next.js アプリケーションを開発する方法を学習します。
+summary: Learn how to use the OpenAPI Specification of a Data App to generate client code and develop a Next.js application.
 ---
 
-# Next.js でデータ アプリの OpenAPI 仕様を使用する {#use-the-openapi-specification-of-a-data-app-with-next-js}
+# Use the OpenAPI Specification of a Data App with Next.js {#use-the-openapi-specification-of-a-data-app-with-next-js}
 
-このドキュメントでは、 [データアプリ](/tidb-cloud/tidb-cloud-glossary.md#data-app)の OpenAPI 仕様を使用してクライアント コードを生成し、Next.js アプリケーションを開発する方法を紹介します。
+This document introduces how to use the OpenAPI Specification of a [Data App](/tidb-cloud/tidb-cloud-glossary.md#data-app) to generate client code and develop a Next.js application.
 
-## 始める前に {#before-you-begin}
+## Before you begin {#before-you-begin}
 
-Next.js で OpenAPI 仕様を使用する前に、次のものを用意してください。
+Before using OpenAPI Specification with Next.js, make sure that you have the following:
 
--   TiDB クラスター。詳細については、 [TiDB Cloud Serverless クラスターを作成する](/tidb-cloud/create-tidb-cluster-serverless.md)または[TiDB Cloud専用クラスターを作成する](/tidb-cloud/create-tidb-cluster.md)参照してください。
+-   A TiDB cluster. For more information, see [Create a TiDB Cloud Serverless cluster](/tidb-cloud/create-tidb-cluster-serverless.md) or [Create a TiDB Cloud Dedicated cluster](/tidb-cloud/create-tidb-cluster.md).
 -   [Node.js](https://nodejs.org/en/download)
--   [ネプ](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
--   [糸](https://yarnpkg.com/getting-started/install)
+-   [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+-   [yarn](https://yarnpkg.com/getting-started/install)
 
-このドキュメントでは、 TiDB Cloud Serverless クラスターを例として使用します。
+This document uses a TiDB Cloud Serverless cluster as an example.
 
-## ステップ1. データを準備する {#step-1-prepare-data}
+## Step 1. Prepare data {#step-1-prepare-data}
 
-まず、TiDB クラスターにテーブル`test.repository`を作成し、そこにサンプル データを挿入します。次の例では、デモ用のデータとして、PingCAP によって開発されたオープン ソース プロジェクトをいくつか挿入します。
+To begin with, create a table `test.repository` in your TiDB cluster and insert some sample data into it. The following example inserts some open source projects developed by PingCAP as data for demonstration purposes.
 
-SQL ステートメントを実行するには、 [TiDB Cloudコンソール](https://tidbcloud.com)の[SQL エディター](/tidb-cloud/explore-data-with-chat2query.md)使用できます。
+To execute the SQL statements, you can use [SQL Editor](/tidb-cloud/explore-data-with-chat2query.md) in the [TiDB Cloud console](https://tidbcloud.com).
 
 ```sql
 -- Select the database
@@ -43,53 +43,53 @@ VALUES ('tidb', 'https://github.com/pingcap/tidb'),
         ('tiflash', 'https://github.com/pingcap/tiflash');
 ```
 
-## ステップ2. データアプリを作成する {#step-2-create-a-data-app}
+## Step 2. Create a Data App {#step-2-create-a-data-app}
 
-データが挿入されたら、 [TiDB Cloudコンソール](https://tidbcloud.com)の[**データサービス**](https://tidbcloud.com/console/data-service)ページに移動します。TiDB クラスターにリンクするデータ アプリを作成し、データ アプリの API キーを作成してから、データ アプリに`GET /repositories`エンドポイントを作成します。このエンドポイントに対応する SQL ステートメントは次のようになります。これは、 `test.repository`テーブルからすべての行を取得します。
+After the data is inserted, navigate to the [**Data Service**](https://tidbcloud.com/project/data-service) page in the [TiDB Cloud console](https://tidbcloud.com). Create a Data App that links to your TiDB cluster, create an API key for the Data App, and then create a `GET /repositories` endpoint in the Data App. The corresponding SQL statement for this endpoint is as follows, which fetches all rows from the `test.repository` table:
 
 ```sql
 SELECT * FROM test.repository;
 ```
 
-詳細については[データサービスを始める](/tidb-cloud/data-service-get-started.md)参照してください。
+For more information, see [Get started with Data Service](/tidb-cloud/data-service-get-started.md).
 
-## ステップ3. クライアントコードを生成する {#step-3-generate-client-code}
+## Step 3. Generate client code {#step-3-generate-client-code}
 
-以下では、Next.js を例として使用し、データ アプリの OpenAPI 仕様を使用してクライアント コードを生成する方法を説明します。
+The following uses Next.js as an example to demonstrate how to generate client code using the OpenAPI Specification of a Data App.
 
-1.  `hello-repos`という名前の Next.js プロジェクトを作成します。
+1.  Create a Next.js project named `hello-repos`.
 
-    公式テンプレートを使用して Next.js プロジェクトを作成するには、次のコマンドを使用し、プロンプトが表示されたらすべてのデフォルト オプションをそのままにします。
+    To create a Next.js project using the official template, use the following command and keep all the default options when prompted:
 
     ```shell
     yarn create next-app hello-repos
     ```
 
-    次のコマンドを使用して、新しく作成したプロジェクトにディレクトリを変更します。
+    Change the directory to the newly created project using the following command:
 
     ```shell
     cd hello-repos
     ```
 
-2.  依存関係をインストールします。
+2.  Install dependencies.
 
-    このドキュメントでは、 [OpenAPI ジェネレーター](https://github.com/OpenAPITools/openapi-generator)使用して、OpenAPI 仕様から API クライアント ライブラリを自動的に生成します。
+    This document uses [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) to automatically generate API client libraries from the OpenAPI Specification.
 
-    OpenAPI Generator を開発依存関係としてインストールするには、次のコマンドを実行します。
+    To install OpenAPI Generator as a development dependency, run the following command:
 
     ```shell
     yarn add @openapitools/openapi-generator-cli --dev
     ```
 
-3.  OpenAPI 仕様をダウンロードし、 `oas/doc.json`として保存します。
+3.  Download the OpenAPI Specification and save it as `oas/doc.json`.
 
-    1.  TiDB Cloud [**データサービス**](https://tidbcloud.com/console/data-service)ページで、左側のペインにあるデータ アプリ名をクリックして、アプリ設定を表示します。
-    2.  **API 仕様**領域で、 **「ダウンロード」**をクリックし、JSON 形式を選択して、プロンプトが表示されたら**「承認」**をクリックします。
-    3.  ダウンロードしたファイルを`hello-repos`プロジェクトディレクトリに`oas/doc.json`として保存します。
+    1.  On the TiDB Cloud [**Data Service**](https://tidbcloud.com/project/data-service) page, click your Data App name in the left pane to view the App settings.
+    2.  In the **API Specification** area, click **Download**, select the JSON format, and then click **Authorize** if prompted.
+    3.  Save the downloaded file as `oas/doc.json` in the `hello-repos` project directory.
 
-    詳細については[OpenAPI仕様をダウンロードする](/tidb-cloud/data-service-manage-data-app.md#download-the-openapi-specification)参照してください。
+    For more information, see [Download the OpenAPI Specification](/tidb-cloud/data-service-manage-data-app.md#download-the-openapi-specification).
 
-    `oas/doc.json`ファイルの構造は次のとおりです。
+    The structure of the `oas/doc.json` file is as follows:
 
     ```json
     {
@@ -133,26 +133,26 @@ SELECT * FROM test.repository;
     ...
     ```
 
-4.  クライアント コードを生成します。
+4.  Generate the client code:
 
     ```shell
     yarn run openapi-generator-cli generate -i oas/doc.json --generator-name typescript-fetch -o gen/api
     ```
 
-    このコマンドは、 `oas/doc.json`仕様を入力として使用してクライアント コードを生成し、クライアント コードを`gen/api`ディレクトリに出力します。
+    This command generates the client code using the `oas/doc.json` specification as input and outputs the client code to the `gen/api` directory.
 
-## ステップ4. Next.jsアプリケーションを開発する {#step-4-develop-your-next-js-application}
+## Step 4. Develop your Next.js application {#step-4-develop-your-next-js-application}
 
-生成されたクライアント コードを使用して、Next.js アプリケーションを開発できます。
+You can use the generated client code to develop your Next.js application.
 
-1.  `hello-repos`プロジェクト ディレクトリで、次の変数を含む`.env.local`ファイルを作成し、変数の値をデータ アプリの公開キーと秘密キーに設定します。
+1.  In the `hello-repos` project directory, create a `.env.local` file with the following variables, and then set the variable values to the public key and private key of your Data App.
 
         TIDBCLOUD_DATA_SERVICE_PUBLIC_KEY=YOUR_PUBLIC_KEY
         TIDBCLOUD_DATA_SERVICE_PRIVATE_KEY=YOUR_PRIVATE_KEY
 
-    データ アプリの API キーを作成するには、 [APIキーを作成する](/tidb-cloud/data-service-api-key.md#create-an-api-key)参照してください。
+    To create an API key for a Data App, see [Create an API key](/tidb-cloud/data-service-api-key.md#create-an-api-key).
 
-2.  `hello-repos`プロジェクト ディレクトリで、 `app/page.tsx`の内容を次のコードに置き換えます。このコードは、 `GET /repositories`エンドポイントからデータを取得してレンダリングします。
+2.  In the `hello-repos` project directory, replace the content of `app/page.tsx` with the following code, which fetches data from the `GET /repositories` endpoint and renders it:
 
     ```js
     import {DefaultApi, Configuration} from "../gen/api"
@@ -178,9 +178,9 @@ SELECT * FROM test.repository;
     }
     ```
 
-    > **注記：**
+    > **Note:**
     >
-    > データ アプリのリンクされたクラスタが異なるリージョンでホストされている場合、ダウンロードした OpenAPI 仕様ファイルの`servers`セクションに複数の項目が表示されます。この場合、 `config`オブジェクトでエンドポイント パスを次のように構成する必要もあります。
+    > If the linked clusters of your Data App are hosted in different regions, you will see multiple items in the `servers` section of the downloaded OpenAPI Specification file. In this case, you also need to configure the endpoint path in the `config` object as follows:
     >
     > ```js
     > const config = new Configuration({
@@ -190,18 +190,18 @@ SELECT * FROM test.repository;
     >   });
     > ```
     >
-    > `basePath`データ アプリの実際のエンドポイント パスに置き換えてください。 `${YOUR_REGION}`と`{YOUR_DATA_APP_ID}`取得するには、エンドポイントの**プロパティ**パネルで**エンドポイント URL**を確認します。
+    > Make sure to replace `basePath` with the actual endpoint path of your Data App. To get `${YOUR_REGION}` and `{YOUR_DATA_APP_ID}`, check the **Endpoint URL** in the endpoint **Properties** panel.
 
-## ステップ5. Next.jsアプリケーションをプレビューする {#step-5-preview-your-next-js-application}
+## Step 5. Preview your Next.js application {#step-5-preview-your-next-js-application}
 
-> **注記：**
+> **Note:**
 >
-> プレビューする前に、必要な依存関係がすべてインストールされ、正しく構成されていることを確認してください。
+> Make sure that all required dependencies are installed and correctly configured before previewing.
 
-ローカル開発サーバーでアプリケーションをプレビューするには、次のコマンドを実行します。
+To preview your application in a local development server, run the following command:
 
 ```shell
 yarn dev
 ```
 
-その後、ブラウザで[http://ローカルホスト:3000](http://localhost:3000)を開き、ページに表示される`test.repository`データベースのデータを確認できます。
+You can then open [http://localhost:3000](http://localhost:3000) in your browser and see the data from the `test.repository` database displayed on the page.
