@@ -21,20 +21,21 @@ The following table lists the commands available for the TiDB Cloud CLI.
 
 To use the `ticloud` CLI in your terminal, run `ticloud [command] [subcommand]`. If you are using [TiUP](https://docs.pingcap.com/tidb/stable/tiup-overview), use `tiup cloud [command] [subcommand]` instead.
 
-| Command               | Subcommand                                                            | Description                                    |
-| --------------------- | --------------------------------------------------------------------- | ---------------------------------------------- |
-| auth                  | login, logout, whoami                                                 | Login and logout                               |
-| serverless (alias: s) | create, delete, describe, list, update, spending-limit, region, shell | Manage TiDB Cloud Serverless clusters          |
-| serverless branch     | create, delete, describe, list, shell                                 | Manage TiDB Cloud Serverless branches          |
-| serverless import     | cancel, describe, list, start                                         | Manage TiDB Cloud Serverless import tasks      |
-| serverless export     | create, describe, list, cancel, download                              | Manage TiDB Cloud Serverless export tasks      |
-| serverless sql-user   | create, list, delete, update                                          | Manage TiDB Cloud Serverless SQL users         |
-| ai                    | <li></li>                                                             | Chat with TiDB Bot                             |
-| completion            | bash, fish, powershell, zsh                                           | Generate completion script for specified shell |
-| config                | create, delete, describe, edit, list, set, use                        | Configure user profiles                        |
-| project               | list                                                                  | Manage projects                                |
-| upgrade               | <li></li>                                                             | Update the CLI to the latest version           |
-| help                  | auth, config, serverless, ai, project, upgrade, help, completion      | View help for any command                      |
+| Command               | Subcommand                                                            | Description                                         |
+| --------------------- | --------------------------------------------------------------------- | --------------------------------------------------- |
+| auth                  | login, logout, whoami                                                 | Login and logout                                    |
+| serverless (alias: s) | create, delete, describe, list, update, spending-limit, region, shell | Manage TiDB Cloud Serverless clusters               |
+| serverless branch     | create, delete, describe, list, shell                                 | Manage TiDB Cloud Serverless branches               |
+| serverless import     | cancel, describe, list, start                                         | Manage TiDB Cloud Serverless import tasks           |
+| serverless export     | create, describe, list, cancel, download                              | Manage TiDB Cloud Serverless export tasks           |
+| serverless sql-user   | create, list, delete, update                                          | Manage TiDB Cloud Serverless SQL users              |
+| serverless audit-log  | config, describe, filter-rule (alias: filter), download               | Manage TiDB Cloud Serverless database audit logging |
+| ai                    | <li></li>                                                             | Chat with TiDB Bot                                  |
+| completion            | bash, fish, powershell, zsh                                           | Generate completion script for specified shell      |
+| config                | create, delete, describe, edit, list, set, use                        | Configure user profiles                             |
+| project               | list                                                                  | Manage projects                                     |
+| upgrade               | <li></li>                                                             | Update the CLI to the latest version                |
+| help                  | auth, config, serverless, ai, project, upgrade, help, completion      | View help for any command                           |
 
 ## Command modes {#command-modes}
 

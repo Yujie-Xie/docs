@@ -1439,6 +1439,10 @@ Configuration items related to Titan.
 
 ### <code>enabled</code> {#code-enabled-code}
 
+> **Warning**
+>
+> When disabling Titan for TiDB versions earlier than v8.5.0, it is not recommended to modify this configuration item to `false`, as this might cause TiKV to crash. To disable Titan, refer to the steps in [Disable Titan](/storage-engine/titan-configuration.md#disable-titan).
+
 > **Note:**
 >
 > -   To enhance the performance of wide table and JSON data writing and point query, starting from TiDB v7.6.0, the default value changes from `false` to `true`, which means that Titan is enabled by default.
