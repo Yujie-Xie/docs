@@ -110,7 +110,6 @@ By setting `sync` to `true`, you can create, update, or delete resources synchro
     provider "tidbcloud" {
       public_key = "your_public_key"
       private_key = "your_private_key"
-      sync = true
     }
 
 Setting `sync` to `true` is recommended, but note that `sync` currently only works with the cluster resource. If you need synchronous operations for other resources, [contact TiDB Cloud Support](/tidb-cloud/tidb-cloud-support.md).
