@@ -794,11 +794,19 @@ Configuration items related to Raftstore.
 
 ### <code>region-compact-check-interval</code> {#code-region-compact-check-interval-code}
 
+> **Warning:**
+>
+> Starting from v7.5.7, this configuration item is deprecated and replaced by [`gc.auto-compaction.check-interval`](#check-interval-new-in-v757).
+
 -   The time interval at which to check whether it is necessary to manually trigger RocksDB compaction. `0` means that this feature is disabled.
 -   Default value: `"5m"`
 -   Minimum value: `0`
 
 ### <code>region-compact-check-step</code> {#code-region-compact-check-step-code}
+
+> **Warning:**
+>
+> Starting from v7.5.7, this configuration item is deprecated.
 
 -   The number of Regions checked at one time for each round of manual compaction
 -   Default value:
@@ -809,11 +817,19 @@ Configuration items related to Raftstore.
 
 ### <code>region-compact-min-tombstones</code> {#code-region-compact-min-tombstones-code}
 
+> **Warning:**
+>
+> Starting from v7.5.7, this configuration item is deprecated and replaced by [`gc.auto-compaction.tombstone-num-threshold`](#tombstone-num-threshold-new-in-v757).
+
 -   The number of tombstones required to trigger RocksDB compaction
 -   Default value: `10000`
 -   Minimum value: `0`
 
 ### <code>region-compact-tombstones-percent</code> {#code-region-compact-tombstones-percent-code}
+
+> **Warning:**
+>
+> Starting from v7.5.7, this configuration item is deprecated and replaced by [`gc.auto-compaction.tombstone-percent-threshold`](#tombstone-percent-threshold-new-in-v757).
 
 -   The proportion of tombstone required to trigger RocksDB compaction
 -   Default value: `30`
@@ -822,11 +838,19 @@ Configuration items related to Raftstore.
 
 ### <code>region-compact-min-redundant-rows</code> <span class="version-mark">New in v7.1.0</span> {#code-region-compact-min-redundant-rows-code-span-class-version-mark-new-in-v7-1-0-span}
 
+> **Warning:**
+>
+> Starting from v7.5.7, this configuration item is deprecated and replaced by [`gc.auto-compaction.redundant-rows-threshold`](#redundant-rows-threshold-new-in-v757).
+
 -   The number of redundant MVCC rows required to trigger RocksDB compaction.
 -   Default value: `50000`
 -   Minimum value: `0`
 
 ### <code>region-compact-redundant-rows-percent</code> <span class="version-mark">New in v7.1.0</span> {#code-region-compact-redundant-rows-percent-code-span-class-version-mark-new-in-v7-1-0-span}
+
+> **Warning:**
+>
+> Starting from v7.5.7, this configuration item is deprecated and replaced by [`gc.auto-compaction.redundant-rows-percent-threshold`](#redundant-rows-percent-threshold-new-in-v757).
 
 -   The percentage of redundant MVCC rows required to trigger RocksDB compaction.
 -   Default value: `20`
@@ -2220,6 +2244,50 @@ Configuration items related to TiDB Lightning import and BR restore.
 
 -   The number of GC threads when `enable-compaction-filter` is `false`.
 -   Default value: `1`
+
+## gc.auto-compaction {#gc-auto-compaction}
+
+Configures the behavior of TiKV automatic compaction.
+
+### <code>check-interval</code> <span class="version-mark">New in v7.5.7</span> {#code-check-interval-code-span-class-version-mark-new-in-v7-5-7-span}
+
+-   The interval at which TiKV checks whether to trigger automatic compaction. Within this interval, Regions that meet the automatic compaction conditions are processed based on priority. When the interval elapses, TiKV rescans Region information and recalculates priorities.
+-   Default value: `"300s"`
+
+### <code>tombstone-num-threshold</code> <span class="version-mark">New in v7.5.7</span> {#code-tombstone-num-threshold-code-span-class-version-mark-new-in-v7-5-7-span}
+
+-   The number of RocksDB tombstones required to trigger TiKV automatic compaction. When the number of tombstones reaches this threshold, or when the percentage of tombstones reaches [`tombstone-percent-threshold`](#tombstone-percent-threshold-new-in-v757), TiKV triggers automatic compaction.
+-   This configuration item takes effect only when [Compaction Filter](/garbage-collection-configuration.md) is disabled.
+-   Default value: `10000`
+-   Minimum value: `0`
+
+### <code>tombstone-percent-threshold</code> <span class="version-mark">New in v7.5.7</span> {#code-tombstone-percent-threshold-code-span-class-version-mark-new-in-v7-5-7-span}
+
+-   The percentage of RocksDB tombstones required to trigger TiKV automatic compaction. When the percentage of tombstones reaches this threshold, or when the number of tombstones reaches [`tombstone-num-threshold`](#tombstone-num-threshold-new-in-v757), TiKV triggers automatic compaction.
+-   This configuration item takes effect only when [Compaction Filter](/garbage-collection-configuration.md) is disabled.
+-   Default value: `30`
+-   Minimum value: `0`
+-   Maximum value: `100`
+
+### <code>redundant-rows-threshold</code> <span class="version-mark">New in v7.5.7</span> {#code-redundant-rows-threshold-code-span-class-version-mark-new-in-v7-5-7-span}
+
+-   The number of redundant MVCC rows required to trigger TiKV automatic compaction. Redundant rows include RocksDB tombstones, TiKV stale versions, and TiKV deletion tombstones. When the number of redundant MVCC rows reaches this threshold, or when the percentage of these rows reaches [`redundant-rows-percent-threshold`](#redundant-rows-percent-threshold-new-in-v757), TiKV triggers automatic compaction.
+-   This configuration item takes effect only when [Compaction Filter](/garbage-collection-configuration.md) is enabled.
+-   Default value: `50000`
+-   Minimum value: `0`
+
+### <code>redundant-rows-percent-threshold</code> <span class="version-mark">New in v7.5.7</span> {#code-redundant-rows-percent-threshold-code-span-class-version-mark-new-in-v7-5-7-span}
+
+-   The percentage of redundant MVCC rows required to trigger TiKV automatic compaction. Redundant rows include RocksDB tombstones, TiKV stale versions, and TiKV deletion tombstones. When the number of redundant MVCC rows reaches [`redundant-rows-threshold`](#redundant-rows-threshold-new-in-v757), or when the percentage of these rows reaches `redundant-rows-percent-threshold`, TiKV triggers automatic compaction.
+-   This configuration item takes effect only when [Compaction Filter](/garbage-collection-configuration.md) is enabled.
+-   Default value: `20`
+-   Minimum value: `0`
+-   Maximum value: `100`
+
+### <code>bottommost-level-force</code> <span class="version-mark">New in v7.5.7</span> {#code-bottommost-level-force-code-span-class-version-mark-new-in-v7-5-7-span}
+
+-   Controls whether to force compaction on the bottommost files in RocksDB.
+-   Default value: `true`
 
 ## backup {#backup}
 
