@@ -1,44 +1,44 @@
 ---
 title: Migrate Data from MariaDB to TiDB
-summary: MariaDB から TiDB にデータを移行する方法を学びます。
+summary: Learn how to migrate data from MariaDB to TiDB.
 ---
 
-# MariaDB から TiDB へのデータの移行 {#migrate-data-from-mariadb-to-tidb}
+# Migrate Data from MariaDB to TiDB {#migrate-data-from-mariadb-to-tidb}
 
-このドキュメントでは、MariaDBサーバーインストールから TiDB クラスターにデータを移行する方法について説明します。
+This document describes how to migrate data from a MariaDB server installation to a TiDB cluster.
 
-## 前提条件 {#prerequisites}
+## Prerequisites {#prerequisites}
 
-適切な移行戦略を選択してください。
+Choose the right migration strategy:
 
--   最初の戦略は[Dumplingでデータをダンプし、 TiDB Lightningでデータを復元する](#dump-data-with-dumpling-and-restore-data-with-tidb-lightning)です。これは MariaDB のすべてのバージョンで機能します。この戦略の欠点は、ダウンタイムが長くなることです。
--   2 番目の戦略は、DM を使用して[DMでデータを複製する](#replicate-data-with-dm)から TiDB に移行することです。DM は MariaDB のすべてのバージョンをサポートしているわけではありません。サポートされているバージョンは[DM 互換性カタログ](/dm/dm-compatibility-catalog.md#compatibility-catalog-of-tidb-data-migration)にリストされています。
+-   The first strategy is to [dump data with Dumpling and restore data with TiDB Lightning](#dump-data-with-dumpling-and-restore-data-with-tidb-lightning). This works for all versions of MariaDB. The drawback of this strategy is that it needs more downtime.
+-   The second strategy is to [Replicate data with DM](#replicate-data-with-dm) from MariaDB to TiDB with DM. DM does not support all versions of MariaDB. Supported versions are listed on the [DM Compatibility Catalog](/dm/dm-compatibility-catalog.md#compatibility-catalog-of-tidb-data-migration).
 
-これら 2 つの戦略の他に、状況に応じて利用できる他の戦略があるかもしれません。たとえば、次のようになります。
+Besides these two strategies, there might be other strategies available specifically to your situation. For example:
 
--   オブジェクト リレーショナル マッピング (ORM) の機能を使用して、データを再デプロイおよび移行します。
--   移行の進行中に MariaDB と TiDB の両方から書き込むようにアプリケーションを変更します。
+-   Use the functionality of your Object Relational Mapping (ORM) to re-deploy and migrate your data.
+-   Modify your application to write from both MariaDB and TiDB while the migration is ongoing.
 
-このドキュメントでは、最初の 2 つの戦略についてのみ説明します。
+This document only covers the first two strategies.
 
-選択した戦略に基づいて、次のものを準備します。
+Prepare the following based on the strategy you choose:
 
--   **ダンプと復元の**戦略の場合:
-    -   [Dumpling](/dumpling-overview.md)と[TiDB Lightning](/tidb-lightning/tidb-lightning-overview.md)インストールします。
-    -   Dumpling がデータをエクスポートするには、MariaDBサーバーに[必要な権限](/dumpling-overview.md#required-privileges)あることを確認してください。
--   **データ複製**戦略については、 [データ移行 (DM)](/dm/dm-overview.md)設定します。
+-   For the **dump and restore** strategy:
+    -   Install [Dumpling](/dumpling-overview.md) and [TiDB Lightning](/tidb-lightning/tidb-lightning-overview.md).
+    -   Make sure you have the [required privileges](/dumpling-overview.md#required-privileges) on the MariaDB server for Dumpling to export data.
+-   For the **data replication** strategy, set up [Data Migration (DM)](/dm/dm-overview.md).
 
-## 互換性を確認する {#check-compatibility}
+## Check compatibility {#check-compatibility}
 
-TiDB は[MySQLと互換性あり](/mysql-compatibility.md)であり、MySQL と MariaDB には多くの共通機能があります。ただし、移行前に知っておくべき、TiDB と互換性がない MariaDB 固有の機能がある可能性があります。
+TiDB is [compatible with MySQL](/mysql-compatibility.md), and MySQL and MariaDB have a lot of functionality in common. However, there might be MariaDB-specific features that might not be compatible with TiDB that you should be aware of before migrating.
 
-このセクションの項目を確認するだけでなく、MariaDB ドキュメントの[互換性と相違点](https://mariadb.com/kb/en/compatibility-differences/)も確認することをお勧めします。
+Besides checking the items in this section, it is recommended that you also check the [Compatibility and Differences](https://mariadb.com/docs/release-notes/community-server/about/compatibility-and-differences) in the MariaDB documentation.
 
-### 認証 {#authentication}
+### Authentication {#authentication}
 
-[MySQL とのSecurity互換性](/security-compatibility-with-mysql.md)ドキュメントには、TiDB がサポートする認証方法がリストされています。TiDB は MariaDB のいくつかの認証方法をサポートしていません。つまり、アカウントに新しいパスワード ハッシュを作成するか、その他の特定の対策を講じる必要がある場合があります。
+The [Security Compatibility with MySQL](/security-compatibility-with-mysql.md) document lists authentication methods that TiDB supports. TiDB does not support a few authentication methods in MariaDB. This means that you might have to create a new password hash for the account or take other specific measures.
 
-使用されている認証方法を確認するには、次のステートメントを実行します。
+To check what authentication methods are used, you can run the following statement:
 
 ```sql
 SELECT
@@ -59,11 +59,11 @@ GROUP BY
 1 row in set (0.002 sec)
 ```
 
-### システムバージョン管理されたテーブル {#system-versioned-tables}
+### System-versioned tables {#system-versioned-tables}
 
-TiDB は[システムバージョン管理されたテーブル](https://mariadb.com/kb/en/system-versioned-tables/)サポートしていません。ただし、TiDB は[`AS OF TIMESTAMP`](/as-of-timestamp.md)サポートしており、システム バージョン管理されたテーブルの使用例の一部を置き換える可能性があります。
+TiDB does not support [system-versioned tables](https://mariadb.com/docs/server/reference/sql-structure/temporal-tables/system-versioned-tables). However, TiDB does support [`AS OF TIMESTAMP`](/as-of-timestamp.md) which might replace some of the use cases of system-versioned tables.
 
-次のステートメントを使用して、影響を受けるテーブルを確認できます。
+You can check for affected tables with the following statement:
 
 ```sql
 SELECT
@@ -84,7 +84,7 @@ WHERE
 1 row in set (0.005 sec)
 ```
 
-システムのバージョン管理を削除するには、次の`ALTER TABLE`ステートメントを実行します。
+To remove system versioning, execute the `ALTER TABLE` statement:
 
 ```sql
 MariaDB [test]> ALTER TABLE t DROP SYSTEM VERSIONING;
@@ -92,11 +92,11 @@ Query OK, 0 rows affected (0.071 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 ```
 
-### シーケンス {#sequences}
+### Sequences {#sequences}
 
-MariaDB と TiDB はどちらも[`CREATE SEQUENCE`](/sql-statements/sql-statement-create-sequence.md)サポートしています。ただし、現在 DM ではサポートされていません。移行中にシーケンスを作成、変更、または削除せず、移行後にこれを特にテストすることをお勧めします。
+Both MariaDB and TiDB support [`CREATE SEQUENCE`](/sql-statements/sql-statement-create-sequence.md). However, it is currently not supported by DM. It is recommended that you do not create, modify, or remove sequences during the migration and test this specifically after migration.
 
-シーケンスを使用しているかどうかを確認するには、次のステートメントを実行します。
+To check if you are using sequences, execute the following statement:
 
 ```sql
 SELECT
@@ -117,11 +117,11 @@ WHERE
 1 row in set (0.016 sec)
 ```
 
-### ストレージエンジン {#storage-engines}
+### Storage engines {#storage-engines}
 
-MariaDB は、 `InnoDB` 、 `MyISAM` 、 `Aria`などのローカル データ用のstorageエンジンを提供しています。データ形式は TiDB では直接サポートされていませんが、これらの移行は問題なく機能します。ただし、 `CONNECT`storageエンジンや`Spider`など、一部のエンジンはサーバーの外部にデータを配置します。このようなテーブルを TiDB に移行することはできますが、TiDB は TiDB クラスターの外部にデータを保存する機能を提供していません。
+MariaDB offers storage engines for local data such as `InnoDB`, `MyISAM` and `Aria`. While the data format is not directly supported by TiDB, migrating these works fine. However, some engines place data outside of the server, such as the `CONNECT` storage engine and `Spider`. While you can migrate such tables to TiDB, TiDB does not provide the functionality to store data outside of the TiDB cluster.
 
-使用しているstorageエンジンを確認するには、次のステートメントを実行します。
+To check what storage engines you are using, execute the following statement:
 
 ```sql
 SELECT
@@ -148,15 +148,15 @@ GROUP BY
 7 rows in set (0.009 sec)
 ```
 
-### 構文 {#syntax}
+### Syntax {#syntax}
 
-MariaDB は、 `DELETE` 、 `INSERT` 、および`REPLACE`ステートメントに対して`RETURNING`キーワードをサポートしています。TiDB はそれらをサポートしていません。アプリケーションとクエリのログを調べて、移行に影響があるかどうかを確認することをお勧めします。
+MariaDB supports the `RETURNING` keyword for `DELETE`, `INSERT`, and `REPLACE` statements. TiDB does not support them. You might want to look into your application and query logging to see if it affects your migration.
 
-### データ型 {#data-types}
+### Data types {#data-types}
 
-MariaDB は、 `UUID` 、 `INET4` 、 `INET6`など、TiDB がサポートしていないいくつかのデータ型をサポートしています。
+MariaDB supports some data types that TiDB does not support, such as `UUID`, `INET4`, and `INET6`.
 
-これらのデータ型を確認するには、次のステートメントを実行します。
+To check for these datatypes, execute the following statement:
 
 ```sql
 SELECT
@@ -182,11 +182,11 @@ WHERE
 
 ```
 
-### 文字セットと照合順序 {#character-set-and-collation}
+### Character set and collation {#character-set-and-collation}
 
-TiDB は、MariaDB でよく使用される`latin1_swedish_ci`照合順序をサポートしていません。
+TiDB does not support the `latin1_swedish_ci` collation that is often used in MariaDB.
 
-TiDB がサポートする照合順序を確認するには、TiDB で次のステートメントを実行します。
+To see what collations TiDB supports, execute this statement on TiDB:
 
 ```sql
 SHOW COLLATION;
@@ -213,7 +213,7 @@ SHOW COLLATION;
 13 rows in set (0.0012 sec)
 ```
 
-現在のテーブルの列が使用している照合順序を確認するには、次のステートメントを使用できます。
+To check what collations the columns of your current tables are using, you can use this statement:
 
 ```sql
 SELECT
@@ -250,96 +250,96 @@ ORDER BY
 14 rows in set (0.045 sec)
 ```
 
-[文字セットと照合順序](/character-set-and-collation.md)も参照してください。
+See also [Character Set and Collation](/character-set-and-collation.md).
 
-## Dumplingでデータをダンプし、 TiDB Lightningでデータを復元する {#dump-data-with-dumpling-and-restore-data-with-tidb-lightning}
+## Dump data with Dumpling and restore data with TiDB Lightning {#dump-data-with-dumpling-and-restore-data-with-tidb-lightning}
 
-この方法では、アプリケーションをオフラインにしてデータを移行し、移行したデータを使用するようにアプリケーションを再構成することを前提としています。
+This method assumes that you take your application offline, migrate the data, and then re-configure your application to use the migrated data.
 
-> **注記：**
+> **Note:**
 >
-> これを本番で行う前に、まずアプリケーションのテストまたは開発インスタンスで実行することを強くお勧めします。これは、互換性の問題が発生する可能性をチェックするとともに、移行にかかる時間を把握するためです。
+> It is strongly recommended to first do this on a test or development instance of your application before doing it in production. This is both to check for possible compatibility issues as to get insight into how much time the migration will take.
 
-MariaDB から TiDB にデータを移行するには、次の手順を実行します。
+Perform the following steps to migrate data from MariaDB to TiDB:
 
-1.  アプリケーションを停止します。アプリケーションをオフラインにします。これにより、移行中または移行後に MariaDB のデータが変更されないことが保証されます。
+1.  Stop your application. Take your application offline. This ensures there are no modifications made to the data in MariaDB during or after the migration.
 
-2.  [`tiup dumpling`](/dumpling-overview.md#use-dumpling-to-export-data)コマンドで MariaDB にデータをダンプします。
+2.  Dump data in MariaDB with the [`tiup dumpling`](/dumpling-overview.md#use-dumpling-to-export-data) command.
 
     ```shell
     tiup dumpling --port 3306 --host 127.0.0.1 --user root --password secret -F 256MB  -o /data/backup
     ```
 
-3.  `tiup tidb-lightning`コマンドを使用してデータを復元します。TiDB TiDB Lightning の設定方法と実行方法の詳細については、 [TiDB Lightningを使い始める](/get-started-with-tidb-lightning.md)参照してください。
+3.  Restore the data by using the `tiup tidb-lightning` command. For more information about how to configure TiDB Lightning and how to run it, see [Get Started with TiDB Lightning](/get-started-with-tidb-lightning.md).
 
-4.  ユーザー アカウントと権限を移行します。ユーザーと権限を移行する方法の詳細については、 [ユーザーと権限をエクスポートする](#export-users-and-grants)参照してください。
+4.  Migrate user accounts and permissions. For more information about how to migrate your users and permissions, see [Export users and grants](#export-users-and-grants).
 
-5.  アプリケーションを再構成します。TiDBサーバーに接続できるように、アプリケーション構成を変更する必要があります。
+5.  Reconfigure your application. You need to change the application configuration so that it can connect to the TiDB server.
 
-6.  クリーンアップします。移行が成功したことを確認したら、MariaDB のデータの最終バックアップを作成し、サーバーを停止します。これは、 TiUP、 Dumpling、 TiDB Lightningなどのツールを削除できることも意味します。
+6.  Clean up. Once you have verified that the migration is successful you can make a final backup of the data in MariaDB and stop the server. This also means you can remove tools such as TiUP, Dumpling, and TiDB Lightning.
 
-## DMでデータを複製する {#replicate-data-with-dm}
+## Replicate data with DM {#replicate-data-with-dm}
 
-この方法では、レプリケーションを設定し、アプリケーションを停止してレプリケーションが追いつくのを待ってから、TiDB を使用するようにアプリケーションを再構成することを前提としています。
+This method assumes you would set up replication, stop your application and wait for the replication to catch up, and then re-configure your application to use TiDB.
 
-DM を使用するには、 [TiUPクラスター](/dm/deploy-a-dm-cluster-using-tiup.md)または[TiDB Operator](/tidb-operator-overview.md)を使用して DM サービスのセットを展開する必要があります。その後、 `dmctl`使用して DM サービスを構成します。
+To use DM, you need to deploy a set of DM services either with a [TiUP cluster](/dm/deploy-a-dm-cluster-using-tiup.md) or with [TiDB Operator](/tidb-operator-overview.md). After that, use `dmctl` to configure the DM services.
 
-> **注記：**
+> **Note:**
 >
-> これを本番で行う前に、まずアプリケーションのテストまたは開発インスタンスで実行することを強くお勧めします。これは、互換性の問題が発生する可能性をチェックするとともに、移行にかかる時間を把握するためです。
+> It is strongly recommended to first do this on a test or development instance of your application before doing it in production. This is both to check for possible compatibility issues as to get insight into how much time the migration will take.
 
-### ステップ1.準備 {#step-1-prepare}
+### Step 1. Prepare {#step-1-prepare}
 
-MariaDB で binlogs が有効になっており、 `binlog_format` `ROW`に設定されていることを確認してください。 `binlog_annotate_row_events=OFF`と`log_bin_compress=OFF`設定することも推奨されます。
+Make sure that binlogs are enabled on MariaDB and that the `binlog_format` is set to `ROW`. It is also recommended to set `binlog_annotate_row_events=OFF` and `log_bin_compress=OFF`.
 
-また、 `SUPER`権限または`BINLOG MONITOR`および`REPLICATION MASTER ADMIN`権限を持つアカウントも必要です。このアカウントには、移行するスキーマの読み取り権限も必要です。
+You also need an account with the `SUPER` permission or with the `BINLOG MONITOR` and `REPLICATION MASTER ADMIN` permissions. This account also needs read permission for the schemas you are going to migrate.
 
-`SUPER`権限を持つアカウントを使用していない場合、TiDB はまだ MariaDB 固有の権限を確認する方法を知らないため、DM 構成に以下を追加する必要がある可能性があります。
+If you are not using an account with the `SUPER` permission, then you might have to add the following to the DM configuration, because TiDB does not yet know how to check for MariaDB specific permissions.
 
 ```yaml
 ignore-checking-items: ["replication_privilege"]
 ```
 
-DMを使用して上流から下流にデータを移行する前に、事前チェックを行うことで上流のデータベース構成のエラーを検出し、移行がスムーズに進むようにします。詳細については、 [移行タスクの事前チェック](/dm/dm-precheck.md)参照してください。
+Before you use DM to migrate data from upstream to downstream, a precheck helps detect errors in the upstream database configurations and ensures that the migration goes smoothly. For more information, see [Migration Task Precheck](/dm/dm-precheck.md)
 
-### ステップ2. データを複製する {#step-2-replicate-data}
+### Step 2. Replicate data {#step-2-replicate-data}
 
-[TiDB データ移行のクイック スタート ガイド](/dm/quick-start-with-dm.md)に従って、MariaDB から TiDB にデータを複製します。
+Follow the [Quick Start Guide for TiDB Data Migration](/dm/quick-start-with-dm.md) to replicate your data from MariaDB to TiDB.
 
-MariaDB から MariaDB へのレプリケーションの場合のように、最初に初期データをコピーする必要はなく、DM がこれを実行します。
+Note that it is not required to first copy the initial data as you would do with MariaDB to MariaDB replication, DM will do this for you.
 
-### ステップ3. ユーザーアカウントと権限を移行する {#step-3-migrate-user-accounts-and-permissions}
+### Step 3. Migrate user accounts and permissions {#step-3-migrate-user-accounts-and-permissions}
 
-ユーザーと権限を移行する方法については、 [ユーザーと権限をエクスポートする](#export-users-and-grants)参照してください。
+See [Export users and grants](#export-users-and-grants) for how to migrate your users and permissions.
 
-### ステップ4. データをテストする {#step-4-test-your-data}
+### Step 4. Test your data {#step-4-test-your-data}
 
-データが複製されたら、読み取り専用クエリを実行して検証することができます。詳細については、 [アプリケーションをテストする](#test-your-application)参照してください。
+Once your data is replicated, you can run read-only queries on it to validate it. For more information, see [Test your application](#test-your-application).
 
-### ステップ5. 切り替える {#step-5-switch-over}
+### Step 5. Switch over {#step-5-switch-over}
 
-TiDB に切り替えるには、次の手順を実行する必要があります。
+To switch over to TiDB, you need to do the following:
 
-1.  アプリケーションを停止します。
-2.  レプリケーションの遅延を監視します。遅延は 0 秒になるはずです。
-3.  アプリケーションが TiDB に接続するように構成を変更し、再度起動します。
+1.  Stop your application.
+2.  Monitor the replication delay, which should go to 0 seconds.
+3.  Change the configuration of your application so that it connects to TiDB and start it again.
 
-レプリケーションの遅延を確認するには、 [`query-status &#x3C;taskname>`](/dm/dm-query-status.md#detailed-query-result)から`dmctl`を実行し、 `subTaskStatus`で`"synced: true"`を確認します。
+To check for replication delay, run [`query-status &#x3C;taskname>`](/dm/dm-query-status.md#detailed-query-result) via `dmctl` and check for `"synced: true"` in the `subTaskStatus`.
 
-### ステップ6. クリーンアップ {#step-6-clean-up}
+### Step 6. Clean up {#step-6-clean-up}
 
-移行が成功したことを確認したら、MariaDB のデータの最終バックアップを作成し、サーバーを停止できます。また、DM クラスターを停止して削除することもできます。
+Once you have verified that the migration is successful, you can make a final backup of the data in MariaDB and stop the server. It also means you can stop and remove the DM cluster.
 
-## ユーザーと権限をエクスポートする {#export-users-and-grants}
+## Export users and grants {#export-users-and-grants}
 
-[`pt-show-grants`](https://docs.percona.com/percona-toolkit/pt-show-grants.html)使用できます。これは、MariaDB からユーザーと権限をエクスポートし、TiDB にロードするための Percona Toolkit の一部です。
+You can use [`pt-show-grants`](https://docs.percona.com/percona-toolkit/pt-show-grants.html). It is part of the Percona Toolkit to export users and grants from MariaDB and load these into TiDB.
 
-## アプリケーションをテストする {#test-your-application}
+## Test your application {#test-your-application}
 
-テストには`sysbench`などの汎用ツールを使用することもできますが、アプリケーションの特定の機能をテストすることを強くお勧めします。たとえば、データの一時コピーを使用して、アプリケーションのコピーを TiDB クラスターに対して実行します。
+While it is possible to use generic tools such as `sysbench` for testing, it is highly recommended to test some specific features of your application. For example, run a copy of your application against a TiDB cluster with a temporary copy of your data.
 
-このようなテストにより、アプリケーションの互換性と TiDB とのパフォーマンスが検証されます。対処が必要な警告があるかどうかを確認するには、アプリケーションと TiDB のログ ファイルを監視する必要があります。アプリケーションが使用しているデータベース ドライバー ( Javaベースのアプリケーションの場合は MySQL Connector/J など) がテストされていることを確認してください。必要に応じて、JMeter などのアプリケーションを使用してアプリケーションに負荷をかけることもできます。
+Such a test makes sure your application compatibility and performance with TiDB is verified. You need to monitor the log files of your application and TiDB to see if there are any warnings that might need to be addressed. Make sure that the database driver that your application is using (for example MySQL Connector/J for Java based applications) is tested. You might want to use an application such as JMeter to put some load on your application if needed.
 
-## データを検証する {#validate-data}
+## Validate data {#validate-data}
 
-[同期差分インスペクター](/sync-diff-inspector/sync-diff-inspector-overview.md)使用して、MariaDB と TiDB のデータが同一であるかどうかを検証できます。
+You can use [sync-diff-inspector](/sync-diff-inspector/sync-diff-inspector-overview.md) to validate if the data in MariaDB and TiDB are identical.
