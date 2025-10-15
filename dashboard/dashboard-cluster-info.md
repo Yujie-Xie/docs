@@ -1,87 +1,91 @@
 ---
 title: TiDB Dashboard Cluster Information Page
-summary: TiDB ダッシュボードのクラスタ情報ページでは、クラスタ全体の TiDB、TiKV、PD、およびTiFlashコンポーネントの実行ステータス、およびこれらのコンポーネントが配置されているホストの実行ステータスを表示できます。ユーザーは、TiDB ダッシュボードにログインして左側のナビゲーション メニューの[クラスタ情報] をクリックするか、ブラウザで特定の URL にアクセスすることで、このページにアクセスできます。このページには、インスタンス、ホスト、およびディスクのリストが表示され、各コンポーネントとその実行ステータスに関する詳細情報が表示されます。
+summary: The TiDB Dashboard Cluster Information Page allows users to view the running status of TiDB, TiKV, PD, and TiFlash components in the entire cluster, as well as the running status of the host on which these components are located. Users can access the page by logging in to TiDB Dashboard and clicking on Cluster Info in the left navigation menu, or by visiting a specific URL in their browser. The page provides instance, host, and disk lists, showing detailed information about each component and its running status.
 ---
 
-# TiDBダッシュボードクラスタ情報ページ {#tidb-dashboard-cluster-information-page}
+# TiDB Dashboard Cluster Information Page {#tidb-dashboard-cluster-information-page}
 
-クラスター情報ページでは、クラスター全体の TiDB、TiKV、PD、 TiFlashコンポーネントの実行ステータスと、これらのコンポーネントが配置されているホストの実行ステータスを表示できます。
+On the cluster information page, you can view the running status of TiDB, TiKV, PD, TiFlash components in the entire cluster and the running status of the host on which these components are located.
 
-## ページにアクセスする {#access-the-page}
+## Access the page {#access-the-page}
 
-クラスター情報ページにアクセスするには、次の 2 つの方法のいずれかを使用できます。
+You can use one of the following two methods to access the cluster information page:
 
--   TiDB ダッシュボードにログインしたら、左側のナビゲーション メニューで**「クラスタ情報」**をクリックします。
+-   After logging in to TiDB Dashboard, click **Cluster Info** in the left navigation menu.
 
--   ブラウザで[http://127.0.0.1:2379/dashboard/#/cluster_info/instance](http://127.0.0.1:2379/dashboard/#/cluster_info/instance)アクセスします。3 `127.0.0.1:2379`実際の PD インスタンスのアドレスとポートに置き換えます。
+-   Visit [http://127.0.0.1:2379/dashboard/#/cluster_info/instance](http://127.0.0.1:2379/dashboard/#/cluster_info/instance) in your browser. Replace `127.0.0.1:2379` with the actual PD instance address and port.
 
-## インスタンスリスト {#instance-list}
+## Instance list {#instance-list}
 
-インスタンスのリストを表示するには、 **「インスタンス」を**クリックします。
+Click **Instances** to view the list of instances:
 
 ![Instance list](/media/dashboard/dashboard-cluster-info-instances-v650.png)
 
-このインスタンス リストには、クラスター内の TiDB、TiKV、PD、およびTiFlashコンポーネントのすべてのインスタンスの概要情報が表示されます。
+This instance list shows the overview information of all instances of TiDB, TiKV, PD, and TiFlash components in the cluster.
 
-リストには次の情報が含まれます。
+The list includes the following information:
 
--   アドレス: インスタンス アドレス。
--   ステータス: インスタンスの実行ステータス。
--   稼働時間: インスタンスの開始時刻。
--   バージョン: インスタンスのバージョン番号。
--   Git ハッシュ: インスタンス バイナリ ファイルに対応する Git ハッシュ値。
--   デプロイメント ディレクトリ: インスタンス バイナリ ファイルが配置されているディレクトリ。
+-   Address: The instance address.
+-   Status: The running status of the instance.
+-   Up Time: The start time of the instance.
+-   Version: The instance version number.
+-   Git Hash: The Git Hash value corresponding to the instance binary file.
+-   Deployment directory: The directory in which the instance binary file is located.
 
-### インスタンスのステータス {#instance-status}
+### Instance status {#instance-status}
 
-インスタンスは次のいずれかのステータスで実行できます。
+An instance can run in one of the following statuses:
 
--   稼働中: インスタンスは正常に実行されています。
--   ダウンまたは到達不能: インスタンスが実行されていないか、対応するホストにネットワークの問題が発生しています。
--   トゥームストーン: インスタンス上のデータが完全に移行され、スケールインが完了しました。このステータスは、TiKV またはTiFlashインスタンスにのみ存在します。
--   離脱中: インスタンス上のデータが移行中で、スケールインが進行中です。このステータスは、TiKV またはTiFlashインスタンスにのみ存在します。
--   不明: インスタンスの実行状態は不明です。
+-   Up: The instance is running normally.
+-   Down or Unreachable: The instance is not running or a network problem exists on the corresponding host.
+-   Tombstone: The data on the instance has been completely migrated out and the scaling-in is complete. This status exists only on TiKV or TiFlash instances.
+-   Leaving: The data on the instance is being migrated out and the scaling-in is in process. This status exists only on TiKV or TiFlash instances.
+-   Unknown: The running state of the instance is unknown.
 
-> **注記：**
+> **Note:**
 >
-> -   TiDB ダッシュボードの`Leaving` 、PD API によって返される`Offline` 、およびTiUPの`Pending Offline`同じステータスを示します。
-> -   テーブル内の一部の列は、インスタンスが起動している場合にのみ表示できます。
+> -   `Leaving` in TiDB Dashboard, `Offline` returned by PD API, and `Pending Offline` in TiUP indicate the same status.
+> -   Some columns in the table can be displayed only when the instance is up.
 
-インスタンスのステータスは PD のスケジュール情報から取得されます。詳細については、 [情報収集](/tidb-scheduling.md#information-collection)参照してください。
+Instance status derives from the PD scheduling information. For more details, see [Information collection](/tidb-scheduling.md#information-collection).
 
-## ホストリスト {#host-list}
+## Host list {#host-list}
 
-ホストのリストを表示するには、 **[ホスト] を**クリックします。
+Click **Hosts** to view the list of hosts:
 
 ![Host list](/media/dashboard/dashboard-cluster-info-hosts-v650.png)
 
-このホスト リストには、クラスター内の TiDB、TiKV、PD、およびTiFlashコンポーネントのすべてのインスタンスに対応するホストの実行ステータスが表示されます。
+This host list shows the running status of hosts that correspond to all instances of TiDB, TiKV, PD, and TiFlash components in the cluster.
 
-リストには次の情報が含まれます。
+The list includes the following information:
 
--   ホスト アドレス: ホスト IP アドレス。
--   CPU: ホスト CPU の論理コアの数。
--   CPU 使用率: 現在の 1 秒間のユーザー モードとカーネル モードの CPU 使用率。
--   メモリ: ホストの合計物理メモリサイズ。
--   メモリ使用量: ホストの現在のメモリ使用量。
+-   Host Address: The Host IP address.
+-   CPU: The number of logical cores of the host CPU.
+-   CPU Usage: The user-mode and kernel-mode CPU usage in the current 1 second.
+-   Memory: The total physical memory size of the host.
+-   Memory Usage: The current memory usage of the host.
 
-> **注記：**
+> **Note:**
 >
-> ホスト リスト情報は各インスタンス プロセスによって提供されるため、ホスト上のすべてのインスタンスがダウンしている場合は、ホスト情報は表示されません。
+> The host list information is provided by each instance process, so when all instances on the host are down, the host information is not displayed.
 
-## ディスクリスト {#disk-list}
+## Disk list {#disk-list}
 
-ディスクのリストを表示するには、 **[ディスク] を**クリックします。
+Click **Disks** to view the list of disks:
 
 ![Disk list](/media/dashboard/dashboard-cluster-info-disks-v650.png)
 
-このディスク リストには、TiDB、TiKV、PD、およびTiFlashインスタンスが実行されているディスクのステータスが表示されます。
+This disk list shows the status of disks on which the TiDB, TiKV, PD, and TiFlash instances run.
 
-リストには次の情報が含まれます。
+The list includes the following information:
 
--   ホスト アドレス: ホスト IP アドレス。
--   マウント ディレクトリ: インスタンスが実行されているホスト上のこのディスクのマウント パス。
--   ファイル システム: インスタンスが実行されているホスト上のこのディスクのファイル システム タイプ。
--   ディスク容量: インスタンスが実行されているホスト上のディスクの合計容量。
--   ディスク使用量: インスタンスが実行されているホスト上のディスクのスペース使用量。
--   インスタンス: このホスト上で実行されているインスタンス。
+-   Host Address: The Host IP address.
+-   Mount Directory: The mount path of this disk on the host on which the instance is running.
+-   File System: The file system type of this disk on the host on which the instance is running.
+-   Disk Capacity: The total space of the disk on the host on which the instance is running.
+-   Disk Usage: The space usage of the disk on the host on which the instance is running.
+-   Instance: The instance running on this host.
+
+> **Note:**
+>
+> The **Disks** list might not display disk information for some hosts, depending on the component type, partition configuration, and deployment method. In these cases, a yellow warning icon (⚠️) appears. If you hover over the icon, a tooltip with the message "Failed to get host information" appears. This is expected behavior.

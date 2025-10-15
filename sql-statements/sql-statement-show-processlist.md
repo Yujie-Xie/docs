@@ -1,20 +1,20 @@
 ---
 title: SHOW [FULL] PROCESSLIST | TiDB SQL Statement Reference
-summary: TiDB データベースの SHOW [FULL] PROCESSLIST の使用法の概要。
+summary: An overview of the usage of SHOW [FULL] PROCESSLIST for the TiDB database.
 ---
 
-# [フル]プロセスリストを表示 {#show-full-processlist}
+# SHOW [FULL] PROCESSLIST {#show-full-processlist}
 
-このステートメントは、同じ TiDBサーバーに接続されている現在のセッションを一覧表示します。1 列にはクエリ テキストが含まれますが、オプションのキーワード`FULL`が指定`Info`れていない限り切り捨てられます。
+This statement lists the current sessions connected to the same TiDB server. The `Info` column contains the query text, which will be truncated unless the optional keyword `FULL` is specified. To view the processlist across the entire cluster, use the [`INFORMATION_SCHEMA.CLUSTER_PROCESSLIST`](/information-schema/information-schema-processlist.md#cluster_processlist) table.
 
-## 概要 {#synopsis}
+## Synopsis {#synopsis}
 
 ```ebnf+diagram
 ShowProcesslistStmt ::=
     "SHOW" "FULL"? "PROCESSLIST"
 ```
 
-## 例 {#examples}
+## Examples {#examples}
 
 ```sql
 mysql> SHOW PROCESSLIST;
@@ -26,11 +26,15 @@ mysql> SHOW PROCESSLIST;
 1 rows in set (0.00 sec)
 ```
 
-## MySQL 互換性 {#mysql-compatibility}
+## Permissions {#permissions}
 
--   TiDB の`State`列目は説明的ではありません。クエリが並列で実行され、各ゴルーチンが常に異なる状態になるため、状態を単一の値として表すのは TiDB ではより複雑になります。
+If the current user does not have the `PROCESS` privilege, `SHOW PROCESSLIST` only shows the requests from the user’s own sessions.
 
-## 参照 {#see-also}
+## MySQL compatibility {#mysql-compatibility}
 
--   [殺す [TIDB]](/sql-statements/sql-statement-kill.md)
+-   The `State` column in TiDB is non-descriptive. Representing state as a single value is more complex in TiDB, since queries are executed in parallel and each goroutine will have a different state at any one time.
+
+## See also {#see-also}
+
+-   [KILL [TIDB]](/sql-statements/sql-statement-kill.md)
 -   [`INFORMATION_SCHEMA.PROCESSLIST`](/information-schema/information-schema-processlist.md)
